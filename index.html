@@ -241,6 +241,31 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
  .lesson-media-actions .btn{width:100%;padding:7px 6px;font-size:11px}
  .lesson-media-play{width:27px;height:27px;font-size:13px;right:6px;bottom:6px}
 }
+
+/* V18: 2 miniaturas por linha no celular; 3 no tablet e computador. */
+.lesson-media-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.lesson-media-card{min-width:0}
+.lesson-media-card h3{overflow-wrap:anywhere;font-size:clamp(15px,1.65vw,20px)}
+.lesson-media-card .lesson-media-body{min-width:0}
+@media(max-width:759px){
+ .lesson-media-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .lesson-media-body{padding:9px 9px 11px}
+ .lesson-media-kicker{font-size:9px;letter-spacing:.07em;margin-bottom:4px}
+ .lesson-media-card h3{font-size:clamp(13px,3.65vw,16px);line-height:1.2}
+ .lesson-media-meta{font-size:10px;margin-top:5px}
+ .lesson-media-play{width:32px;height:32px;font-size:14px;right:7px;bottom:7px}
+ .lesson-media-actions{gap:7px;align-items:flex-start;flex-wrap:wrap;margin-top:9px}
+ .lesson-media-actions .done-toggle{font-size:10px;gap:4px}
+ .lesson-media-actions input{width:15px;height:15px}
+ .lesson-media-actions .btn{font-size:11px;padding:6px 8px}
+}
+@media(min-width:760px) and (max-width:1020px){
+ .lesson-media-grid{gap:9px}
+ .lesson-media-body{padding:10px}
+ .lesson-media-card h3{font-size:15px}
+ .lesson-media-actions{flex-wrap:wrap}
+ .lesson-media-actions .btn{font-size:11px;padding:6px 8px}
+}
 </style>
 <meta name="description" content="Curso gratuito de Psicanálise da Formação Afetiva: videoaulas, módulos, apostila ilustrada e reflexões." />
 <meta name="robots" content="index,follow" />
