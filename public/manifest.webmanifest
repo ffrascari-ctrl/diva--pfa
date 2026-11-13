@@ -1,0 +1,20 @@
+{
+  "name": "PFA Divã — Psicanálise da Formação Afetiva",
+  "short_name": "PFA Divã",
+  "description": "Curso gratuito de Psicanálise da Formação Afetiva, com videoaulas, apostila e reflexões pessoais.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#f8f5ed",
+  "theme_color": "#12313d",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
