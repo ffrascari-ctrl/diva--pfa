@@ -1,10 +1,12 @@
 import crypto from 'node:crypto';
 
 const fail=(res,status,message)=>res.status(status).json({ok:false,error:message});
-const ready=()=>Boolean(process.env.UPSTASH_REDIS_REST_URL&&process.env.UPSTASH_REDIS_REST_TOKEN&&process.env.PFA_ADMIN_PASSWORD&&process.env.PFA_SESSION_SECRET);
+const redisUrl=()=>process.env.UPSTASH_REDIS_REST_URL||process.env.KV_REST_API_URL;
+const redisToken=()=>process.env.UPSTASH_REDIS_REST_TOKEN||process.env.KV_REST_API_TOKEN;
+const ready=()=>Boolean(redisUrl()&&redisToken()&&process.env.PFA_ADMIN_PASSWORD&&process.env.PFA_SESSION_SECRET);
 async function redis(command){
-  const response=await fetch(process.env.UPSTASH_REDIS_REST_URL,{
-    method:'POST',headers:{Authorization:'Bearer '+process.env.UPSTASH_REDIS_REST_TOKEN,'Content-Type':'application/json'},
+  const response=await fetch(redisUrl(),{
+    method:'POST',headers:{Authorization:'Bearer '+redisToken(),'Content-Type':'application/json'},
     body:JSON.stringify(command)
   });
   if(!response.ok)throw new Error('Banco de dados indisponível');
