@@ -407,6 +407,13 @@ function pfaPdfPageData(num){
   if(pfaPdfPageCache.has(num))return Promise.resolve(pfaPdfPageCache.get(num));
   if(pfaPdfPageJobs.has(num))return pfaPdfPageJobs.get(num);
   const job=(async()=>{
+    /* Páginas 10 a 25 convertidas em WebP individual para leitura rápida. */
+    if(num>=10 && num<=25){
+      const url='/paginas/'+num+'.webp';
+      const response=await fetch(url,{method:'HEAD',cache:'force-cache'});
+      if(response.ok){pfaPdfPageCache.set(num,url);return url;}
+      /* Enquanto ainda não publicadas, usa a fonte previamente configurada. */
+    }
     if(num>=1 && num<=115){
       const group=await pfaImageGroup(pfaImageGroupFile(num));
       const encoded=group[String(num)];
