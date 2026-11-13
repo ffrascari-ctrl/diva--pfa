@@ -557,19 +557,21 @@ function backupView(){return `<div class="section"><div><span class="kicker">Aut
 function accountView(){
   let info={};try{info=JSON.parse(localStorage.getItem('pfa_diva_profile_v1')||'{}')}catch(e){}
   return `<div class="section"><div><span class="kicker">Seu espaço</span><h2>Minha conta</h2><p>O Divã continua gratuito mesmo sem inscrição.</p></div></div>
-  <div class="panel"><h3>Meus dados neste aparelho</h3><p>Este formulário ainda não envia os seus dados ao responsável pelo curso. As informações ficam somente neste navegador, até ser conectado um cadastro seguro.</p>
+  <div class="panel"><h3>Meus dados neste aparelho</h3><p>O cadastro só é enviado ao Estúdio quando o armazenamento seguro estiver ativo. Caso contrário, você poderá guardar os dados neste aparelho.</p>
   <form id="pfaAccountForm" class="pfa-signup-form">
     <label>Nome<input name="name" maxlength="100" autocomplete="name" value="${escapeHtml(info.name||'')}" required></label>
     <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" value="${escapeHtml(info.phone||'')}" required></label>
     <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" value="${escapeHtml(info.email||'')}" required></label>
     <label class="pfa-signup-consent"><input name="consent" type="checkbox" ${info.consent?'checked':''}> Desejo receber mensagens e avisos da PFA pelo WhatsApp e e-mail quando o cadastro estiver disponível.</label>
-    <button class="btn primary" type="submit">Salvar neste aparelho</button>
+    <button class="btn primary" type="submit">Salvar meus dados</button>
     <button class="btn outline" type="button" id="pfaEraseProfile">Apagar meus dados</button>
   </form>
   <p id="pfaAccountMessage" aria-live="polite"></p></div>
   <div class="panel" style="margin-top:14px"><h3>Instalar Divã</h3><p>Você pode adicionar o aplicativo à tela inicial sem precisar se inscrever.</p><button class="btn outline" type="button" id="pfaAccountInstall">↓ Instalar aplicativo</button></div>
+  <div class="panel" style="margin-top:14px"><h3>Administração</h3><p>O Estúdio é exclusivo do administrador e protegido por senha.</p><button class="btn outline" type="button" data-go="studio">Entrar no Estúdio</button></div>
   <div class="panel" style="margin-top:14px"><h3>Seus arquivos</h3><p>Suas reflexões e seu progresso ficam neste navegador.</p><button class="btn outline" type="button" data-go="backup">Abrir backup das anotações</button></div>`}
-function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='journal'?journalView():state.view==='account'?accountView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view)}
+function studioView(){return `<div class="section"><div><span class="kicker">Área exclusiva</span><h2>Estúdio PFA</h2><p>Administração dos inscritos. Requer login e configuração do armazenamento seguro.</p></div></div><div class="panel" id="pfaStudio"><p>Verificando acesso administrativo...</p></div>`}
+function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='journal'?journalView():state.view==='account'?accountView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();}
 function bindUI(v){
   pfaBindPageImages(v);
 v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#saveJournal')?.addEventListener('click',()=>{notes._journal=v.querySelector('#journalText')?.value||'';persistNotes();notify('Anotações salvas neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
@@ -790,13 +792,13 @@ render();
   <div class="pfa-welcome-card">
     <h2 id="pfaWelcomeTitle">Bem-vindo ao Divã PFA</h2>
     <p>Curso gratuito de Psicanálise da Formação Afetiva. Você pode registrar seus dados e, se desejar, receber avisos quando o sistema de inscrições estiver disponível.</p>
-    <p class="pfa-welcome-note"><strong>Importante:</strong> nesta versão, os dados ficam apenas no seu aparelho. Eles ainda não são enviados à equipe do curso.</p>
+    <p class="pfa-welcome-note"><strong>Importante:</strong> a inscrição será enviada à equipe somente quando o cadastro seguro estiver ativo. Caso contrário, você poderá prosseguir gratuitamente.</p>
     <form class="pfa-signup-form" id="pfaWelcomeForm">
       <label>Nome<input name="name" maxlength="100" autocomplete="name" required></label>
       <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" required></label>
       <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" required></label>
       <label class="pfa-signup-consent"><input name="consent" type="checkbox"> Autorizo receber comunicações do Divã PFA pelo WhatsApp e e-mail, quando esse serviço for disponibilizado.</label>
-      <button type="submit" class="btn primary">Salvar inscrição neste aparelho</button>
+      <button type="submit" class="btn primary">Enviar inscrição</button>
     </form>
     <button type="button" class="pfa-welcome-skip" id="pfaWelcomeSkip">Continuar sem inscrição</button>
   </div>
@@ -805,15 +807,68 @@ render();
 (function(){
  const PROFILE='pfa_diva_profile_v1',SEEN='pfa_diva_signup_invite_seen_v1';
  const modal=document.getElementById('pfaWelcome');
- function save(form){const data=new FormData(form);const o={name:String(data.get('name')||'').trim(),phone:String(data.get('phone')||'').trim(),email:String(data.get('email')||'').trim(),consent:data.has('consent'),savedAt:new Date().toISOString()};localStorage.setItem(PROFILE,JSON.stringify(o));localStorage.setItem(SEEN,'1');return o;}
- function close(){modal.hidden=true;localStorage.setItem(SEEN,'1');}
- document.getElementById('pfaWelcomeForm').addEventListener('submit',e=>{e.preventDefault();try{save(e.currentTarget);close();}catch(err){alert('Não foi possível salvar neste navegador. Você pode continuar sem inscrição.');}});
+ async function request(action,body){
+  const resp=await fetch('/api/pfa?action='+encodeURIComponent(action),{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},credentials:'same-origin',body:body?JSON.stringify(body):undefined,cache:'no-store'});
+  let result={};try{result=await resp.json()}catch(e){}
+  if(!resp.ok)throw new Error(result.error||'Serviço indisponível');
+  return result;
+ }
+ function values(form){const data=new FormData(form);return {name:String(data.get('name')||'').trim(),phone:String(data.get('phone')||'').trim(),email:String(data.get('email')||'').trim(),consent:data.has('consent')};}
+ async function save(form){
+  const record=values(form);
+  let delivered=false;
+  try{await request('signup',record);delivered=true;}catch(err){delivered=false;}
+  if(delivered){try{localStorage.setItem(PROFILE,JSON.stringify({...record,savedAt:new Date().toISOString(),sent:true}));}catch(e){}}
+  else{
+    if(!confirm('O cadastro online ainda não está disponível. Deseja salvar seus dados somente neste aparelho?'))return null;
+    try{localStorage.setItem(PROFILE,JSON.stringify({...record,savedAt:new Date().toISOString(),sent:false}));}catch(e){alert('Não foi possível salvar os dados.');return null;}
+  }
+  try{localStorage.setItem(SEEN,'1');}catch(e){}
+  return delivered;
+ }
+ function close(){modal.hidden=true;try{localStorage.setItem(SEEN,'1')}catch(e){}}
+ document.getElementById('pfaWelcomeForm').addEventListener('submit',async e=>{
+  e.preventDefault();const btn=e.currentTarget.querySelector('[type=submit]');btn.disabled=true;
+  try{const result=await save(e.currentTarget);if(result!==null){close();alert(result?'Inscrição recebida!':'Dados salvos somente no seu aparelho.');}}
+  finally{btn.disabled=false;}
+ });
  document.getElementById('pfaWelcomeSkip').addEventListener('click',close);
- document.addEventListener('submit',e=>{if(e.target.id!=='pfaAccountForm')return;e.preventDefault();try{save(e.target);const m=document.getElementById('pfaAccountMessage');if(m)m.textContent='Dados salvos somente neste aparelho.';}catch(err){alert('Não foi possível salvar.');}});
+ document.addEventListener('submit',async e=>{
+  if(e.target.id!=='pfaAccountForm')return;
+  e.preventDefault();const btn=e.target.querySelector('[type=submit]');btn.disabled=true;
+  try{
+   const result=await save(e.target);const m=document.getElementById('pfaAccountMessage');
+   if(m&&result!==null)m.textContent=result?'Inscrição recebida pelo Divã PFA.':'Dados salvos somente neste aparelho, sem envio ao Estúdio.';
+  }finally{btn.disabled=false;}
+ });
  document.addEventListener('click',e=>{
   if(e.target.closest('#pfaEraseProfile')){if(confirm('Apagar seus dados deste aparelho?')){localStorage.removeItem(PROFILE);render();}}
   if(e.target.closest('#pfaAccountInstall'))document.getElementById('pfaInstallMenu')?.click();
  });
+ function cell(value){const td=document.createElement('td');td.textContent=value??'';td.style.cssText='padding:8px;border-bottom:1px solid #dde8e2;word-break:break-word';return td;}
+ async function loadStudio(){
+  const root=document.getElementById('pfaStudio');if(!root)return;
+  try{
+   const me=await request('me');
+   if(!me.admin){
+    root.innerHTML='<p>Digite a senha de administrador para consultar inscrições.</p><form id="pfaStudioLogin" class="pfa-signup-form"><label>Senha do Estúdio<input type="password" name="password" autocomplete="current-password" required></label><button type="submit" class="btn primary">Entrar</button></form><p id="pfaStudioMessage" aria-live="polite"></p>';
+    root.querySelector('form').addEventListener('submit',async event=>{
+     event.preventDefault();const btn=event.target.querySelector('button');btn.disabled=true;
+     try{await request('login',{password:event.target.elements.password.value});loadStudio();}
+     catch(err){root.querySelector('#pfaStudioMessage').textContent=err.message;}
+     finally{btn.disabled=false;}
+    });
+    return;
+   }
+   const listing=await request('students');
+   root.innerHTML='<div class="flex" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><p id="pfaStudioCount"></p><button type="button" class="btn outline" id="pfaStudioLogout">Sair do Estúdio</button></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Autorizou avisos?</th></tr></thead><tbody id="pfaStudioRows"></tbody></table></div><p style="font-size:12px">Esses contatos são pessoais. Não compartilhe a lista sem autorização.</p>';
+   root.querySelector('#pfaStudioCount').textContent='Inscritos encontrados: '+listing.students.length;
+   const tbody=root.querySelector('#pfaStudioRows');
+   for(const item of listing.students){const tr=document.createElement('tr');[item.name,item.phone,item.email,item.consent?'Sim':'Não'].forEach(v=>tr.appendChild(cell(v)));tbody.appendChild(tr);}
+   root.querySelector('#pfaStudioLogout').addEventListener('click',async()=>{try{await request('logout',{});}catch(e){}loadStudio();});
+  }catch(err){root.textContent='Estúdio indisponível: '+err.message+'. Configure a senha e o armazenamento seguro no servidor para ativar.';}
+ }
+ window.pfaLoadStudio=loadStudio;
  try{if(!localStorage.getItem(SEEN)&&!localStorage.getItem(PROFILE)){setTimeout(()=>{modal.hidden=false;},900)}}catch(e){}
 })();
 </script>
