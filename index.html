@@ -568,7 +568,6 @@ function accountView(){
   </form>
   <p id="pfaAccountMessage" aria-live="polite"></p></div>
   <div class="panel" style="margin-top:14px"><h3>Instalar Divã</h3><p>Você pode adicionar o aplicativo à tela inicial sem precisar se inscrever.</p><button class="btn outline" type="button" id="pfaAccountInstall">↓ Instalar aplicativo</button></div>
-  <div class="panel" style="margin-top:14px"><h3>Administração</h3><p>O Estúdio é exclusivo do administrador e protegido por senha.</p><button class="btn outline" type="button" data-go="studio">Entrar no Estúdio</button></div>
   <div class="panel" style="margin-top:14px"><h3>Seus arquivos</h3><p>Suas reflexões e seu progresso ficam neste navegador.</p><button class="btn outline" type="button" data-go="backup">Abrir backup das anotações</button></div>`}
 function studioView(){return `<div class="section"><div><span class="kicker">Área exclusiva</span><h2>Estúdio PFA</h2><p>Administração dos inscritos. Requer login e configuração do armazenamento seguro.</p></div></div><div class="panel" id="pfaStudio"><p>Verificando acesso administrativo...</p></div>`}
 function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='journal'?journalView():state.view==='account'?accountView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();}
@@ -869,6 +868,9 @@ render();
   }catch(err){root.textContent='Estúdio indisponível: '+err.message+'. Configure a senha e o armazenamento seguro no servidor para ativar.';}
  }
  window.pfaLoadStudio=loadStudio;
+ function openStudioFromLink(){if(location.hash==='#estudio'&&typeof navigate==='function')navigate('studio');}
+ window.addEventListener('hashchange',openStudioFromLink);
+ openStudioFromLink();
  try{if(!localStorage.getItem(SEEN)&&!localStorage.getItem(PROFILE)){setTimeout(()=>{modal.hidden=false;},900)}}catch(e){}
 })();
 </script>
