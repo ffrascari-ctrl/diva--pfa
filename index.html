@@ -23,7 +23,7 @@ body{background:#eceeea;min-width:300px}
 .brand b{font-size:23px;letter-spacing:.04em}
 .brand small{font-size:10px;max-width:190px;line-height:1.35}
 .sidebox{display:none}
-.menu{position:fixed;z-index:700;bottom:0;left:50%;transform:translateX(-50%);width:min(710px,100%);height:auto;min-height:70px;background:#fff;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border-top:1px solid #d5e2db;padding:5px 5px calc(5px + env(safe-area-inset-bottom,0px));box-shadow:0 -5px 21px rgba(12,41,46,.12);overflow:visible}
+.menu{position:fixed;z-index:700;bottom:0;left:50%;transform:translateX(-50%);width:min(710px,100%);height:auto;min-height:70px;background:#fff;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid #d5e2db;padding:5px 5px calc(5px + env(safe-area-inset-bottom,0px));box-shadow:0 -5px 21px rgba(12,41,46,.12);overflow:visible}
 .menu button{min-width:0;width:100%;border-radius:10px;display:flex;flex-direction:column;gap:0;align-items:center;justify-content:center;padding:7px 1px 5px;font-size:10px;line-height:1.2;font-weight:650;text-align:center;color:#516b70;background:transparent}
 .menu button span{display:block;width:auto;font-size:20px;margin-bottom:3px;line-height:1.05}
 .menu button:hover,.menu button.active{background:#e8f4ef;color:#0c655f}
@@ -306,9 +306,8 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
  <nav class="menu" id="menu">
   <button data-nav="home" class="active"><span>⌂</span> Início</button>
   <button data-nav="catalog"><span>▦</span> Módulos</button>
-  <button data-nav="admin"><span>✎</span> Editar conteúdos</button>
   <button data-nav="journal"><span>♡</span> Minhas reflexões</button>
-  <button data-nav="backup"><span>⇩</span> Backup</button>
+  <button data-nav="account"><span>♙</span> Conta</button>
   <button type="button" class="pfa-install-menu" id="pfaInstallMenu"><span>↓</span> Instalar aplicativo</button>
  </nav>
  <div class="sidebox"><strong>Uma apostila, toda a formação.</strong><p>16 módulos • 89 lições • 215 páginas ilustradas. Seus registros ficam neste navegador. Faça backups regularmente.</p></div>
@@ -555,7 +554,22 @@ function lessonView(){let m=moduleById(state.mod),l=lessonById(m,state.lesson);i
 function adminView(){return `<div class="section"><div><span class="kicker">Painel de edição local</span><h2>Organizar aulas e módulos</h2><p>Você pode alterar títulos, incluir vídeos, textos, PDFs e novas lições sem depender do Grok.</p></div><button class="btn primary" id="newModule">+ Criar módulo</button></div><div class="notice">Atenção: este painel <strong>não possui autenticação</strong> e os dados são salvos apenas neste navegador. É adequado para editar e testar localmente, mas não deve ser publicado como área administrativa aberta na internet. Para alunos e atualizações on-line será necessária uma versão com servidor e contas protegidas.</div><div class="panel">${catalog.modules.map((m,i)=>`<div class="adminitem"><div><h3>${i+1}. ${escapeHtml(m.title)}</h3><p>${lessonCount(m)} lições • ${escapeHtml(m.description||'')}</p></div><div class="flex"><button class="btn outline small" data-edit-module="${escapeHtml(m.id)}">Editar</button><button class="btn primary small" data-edit-lesson="${escapeHtml(m.id)}|">+ Aula</button><button class="btn outline small" data-module="${escapeHtml(m.id)}">Abrir</button></div></div>`).join('')}</div>`}
 function journalView(){return `<div class="section"><div><span class="kicker">Reflexão pessoal</span><h2>Meu caderno de discernimento</h2><p>Perguntas práticas inspiradas no itinerário formativo da PFA.</p></div></div><div class="panel"><p>O que aconteceu de fato? O que eu interpretei? Que sentimento e impulso surgiram? Que virtude pode orientar a minha resposta?</p><textarea id="journalText" class="textarea notebook" placeholder="Escreva suas reflexões e decisões práticas...">${escapeHtml(notes._journal||'')}</textarea><div class="flex" style="margin-top:12px"><button class="btn primary" id="saveJournal">Salvar minhas anotações</button><button class="btn outline" data-go="catalog">Voltar aos módulos</button></div><div class="notice">Este caderno é privado somente enquanto o dispositivo e o navegador forem privados. Um backup JSON inclui suas anotações e não é criptografado: guarde-o em local seguro.</div></div>`}
 function backupView(){return `<div class="section"><div><span class="kicker">Autonomia e proteção do trabalho</span><h2>Backup e restauração</h2><p>Exporte os conteúdos que você acrescentou, suas reflexões e seu progresso.</p></div></div><div class="panel"><h3>Guardar e recuperar seu trabalho</h3><p>O backup JSON inclui a organização dos módulos, títulos, textos, links de vídeo/PDF, progresso e anotações. As <strong>215 imagens da apostila</strong> acompanham o aplicativo, mas não são incluídas no backup JSON. Guarde este arquivo HTML para manter as imagens.</p><div class="flex" style="margin-top:20px"><button class="btn primary" id="exportBackup">⇩ Exportar backup JSON</button><button class="btn outline" id="importBackup">⇧ Restaurar backup JSON</button></div><div class="notice">A restauração substitui os dados atuais. Exporte seu backup antes. Se você vier de uma versão anterior do Divã, também pode importar o arquivo JSON dela; o material da apostila será mantido na nova instalação.</div><hr class="rule"><h3>Como manter a apostila independente</h3><p>Nesta versão de arquivo único, as imagens estão dentro do próprio HTML. Guarde este HTML em local seguro. O backup JSON guarda apenas os registros e as personalizações; sem o aplicativo e suas imagens, ele não contém as páginas da apostila.</p><hr class="rule"><button class="btn danger" id="eraseProgress">Apagar somente meu progresso</button></div>`}
-function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='journal'?journalView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view)}
+function accountView(){
+  let info={};try{info=JSON.parse(localStorage.getItem('pfa_diva_profile_v1')||'{}')}catch(e){}
+  return `<div class="section"><div><span class="kicker">Seu espaço</span><h2>Minha conta</h2><p>O Divã continua gratuito mesmo sem inscrição.</p></div></div>
+  <div class="panel"><h3>Meus dados neste aparelho</h3><p>Este formulário ainda não envia os seus dados ao responsável pelo curso. As informações ficam somente neste navegador, até ser conectado um cadastro seguro.</p>
+  <form id="pfaAccountForm" class="pfa-signup-form">
+    <label>Nome<input name="name" maxlength="100" autocomplete="name" value="${escapeHtml(info.name||'')}" required></label>
+    <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" value="${escapeHtml(info.phone||'')}" required></label>
+    <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" value="${escapeHtml(info.email||'')}" required></label>
+    <label class="pfa-signup-consent"><input name="consent" type="checkbox" ${info.consent?'checked':''}> Desejo receber mensagens e avisos da PFA pelo WhatsApp e e-mail quando o cadastro estiver disponível.</label>
+    <button class="btn primary" type="submit">Salvar neste aparelho</button>
+    <button class="btn outline" type="button" id="pfaEraseProfile">Apagar meus dados</button>
+  </form>
+  <p id="pfaAccountMessage" aria-live="polite"></p></div>
+  <div class="panel" style="margin-top:14px"><h3>Instalar Divã</h3><p>Você pode adicionar o aplicativo à tela inicial sem precisar se inscrever.</p><button class="btn outline" type="button" id="pfaAccountInstall">↓ Instalar aplicativo</button></div>
+  <div class="panel" style="margin-top:14px"><h3>Seus arquivos</h3><p>Suas reflexões e seu progresso ficam neste navegador.</p><button class="btn outline" type="button" data-go="backup">Abrir backup das anotações</button></div>`}
+function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='journal'?journalView():state.view==='account'?accountView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view)}
 function bindUI(v){
   pfaBindPageImages(v);
 v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#saveJournal')?.addEventListener('click',()=>{notes._journal=v.querySelector('#journalText')?.value||'';persistNotes();notify('Anotações salvas neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
@@ -749,13 +763,57 @@ render();
   if('serviceWorker' in navigator && location.protocol==='https:') {
     window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
   }
-  try{
-    if(isMobile()&&!installed()&&!localStorage.getItem(KEY)){
-      setTimeout(()=>{if(!installed())openInvite(false)},1600);
-    }
-  }catch(e){}
+  /* O convite automático de instalação foi substituído pela apresentação da inscrição opcional. */
 })();
 </script>
 
+
+<style>
+/* Cadastro opcional e navegação pública */
+.pfa-signup-form{display:grid;gap:12px;margin-top:14px}
+.pfa-signup-form label{display:grid;gap:5px;font-size:13px;color:#314a4b;font-weight:600}
+.pfa-signup-form input:not([type=checkbox]){width:100%;min-width:0;background:#fff;border:1px solid #cddbd5;border-radius:11px;padding:12px;font:inherit;color:#17383c}
+.pfa-signup-consent{display:flex!important;align-items:flex-start;gap:10px!important;line-height:1.45;font-weight:400!important}
+.pfa-signup-consent input{width:18px;height:18px;flex:none;margin-top:2px}
+.pfa-welcome[hidden]{display:none!important}
+.pfa-welcome{position:fixed;inset:0;z-index:4900;background:rgba(10,28,33,.65);display:flex;justify-content:center;align-items:center;padding:12px}
+.pfa-welcome-card{width:min(100%,470px);max-height:calc(100dvh - 24px);overflow:auto;background:#fffdf7;border-radius:22px;padding:24px 20px;box-shadow:0 18px 60px #0003}
+.pfa-welcome-card h2{font:normal 30px/1.1 Georgia,serif;color:#12313d;margin:0 0 10px}
+.pfa-welcome-card p{font-size:13px;line-height:1.5}
+.pfa-welcome-card .btn{width:100%}
+.pfa-welcome-note{color:#61757a}
+.pfa-welcome-card .pfa-welcome-skip{margin-top:10px;border:0;background:transparent;padding:10px;width:100%;color:#235c60}
+</style>
+<div class="pfa-welcome" id="pfaWelcome" role="dialog" aria-modal="true" aria-labelledby="pfaWelcomeTitle" hidden>
+  <div class="pfa-welcome-card">
+    <h2 id="pfaWelcomeTitle">Bem-vindo ao Divã PFA</h2>
+    <p>Curso gratuito de Psicanálise da Formação Afetiva. Você pode registrar seus dados e, se desejar, receber avisos quando o sistema de inscrições estiver disponível.</p>
+    <p class="pfa-welcome-note"><strong>Importante:</strong> nesta versão, os dados ficam apenas no seu aparelho. Eles ainda não são enviados à equipe do curso.</p>
+    <form class="pfa-signup-form" id="pfaWelcomeForm">
+      <label>Nome<input name="name" maxlength="100" autocomplete="name" required></label>
+      <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" required></label>
+      <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" required></label>
+      <label class="pfa-signup-consent"><input name="consent" type="checkbox"> Autorizo receber comunicações do Divã PFA pelo WhatsApp e e-mail, quando esse serviço for disponibilizado.</label>
+      <button type="submit" class="btn primary">Salvar inscrição neste aparelho</button>
+    </form>
+    <button type="button" class="pfa-welcome-skip" id="pfaWelcomeSkip">Continuar sem inscrição</button>
+  </div>
+</div>
+<script>
+(function(){
+ const PROFILE='pfa_diva_profile_v1',SEEN='pfa_diva_signup_invite_seen_v1';
+ const modal=document.getElementById('pfaWelcome');
+ function save(form){const data=new FormData(form);const o={name:String(data.get('name')||'').trim(),phone:String(data.get('phone')||'').trim(),email:String(data.get('email')||'').trim(),consent:data.has('consent'),savedAt:new Date().toISOString()};localStorage.setItem(PROFILE,JSON.stringify(o));localStorage.setItem(SEEN,'1');return o;}
+ function close(){modal.hidden=true;localStorage.setItem(SEEN,'1');}
+ document.getElementById('pfaWelcomeForm').addEventListener('submit',e=>{e.preventDefault();try{save(e.currentTarget);close();}catch(err){alert('Não foi possível salvar neste navegador. Você pode continuar sem inscrição.');}});
+ document.getElementById('pfaWelcomeSkip').addEventListener('click',close);
+ document.addEventListener('submit',e=>{if(e.target.id!=='pfaAccountForm')return;e.preventDefault();try{save(e.target);const m=document.getElementById('pfaAccountMessage');if(m)m.textContent='Dados salvos somente neste aparelho.';}catch(err){alert('Não foi possível salvar.');}});
+ document.addEventListener('click',e=>{
+  if(e.target.closest('#pfaEraseProfile')){if(confirm('Apagar seus dados deste aparelho?')){localStorage.removeItem(PROFILE);render();}}
+  if(e.target.closest('#pfaAccountInstall'))document.getElementById('pfaInstallMenu')?.click();
+ });
+ try{if(!localStorage.getItem(SEEN)&&!localStorage.getItem(PROFILE)){setTimeout(()=>{modal.hidden=false;},900)}}catch(e){}
+})();
+</script>
 </body>
 </html>
