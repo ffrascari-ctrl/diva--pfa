@@ -407,8 +407,8 @@ function pfaPdfPageData(num){
   if(pfaPdfPageCache.has(num))return Promise.resolve(pfaPdfPageCache.get(num));
   if(pfaPdfPageJobs.has(num))return pfaPdfPageJobs.get(num);
   const job=(async()=>{
-    /* Páginas 10 a 35 convertidas em WebP individual para leitura rápida. */
-    if(num>=10 && num<=35){
+    /* Páginas publicadas em WebP individual para leitura rápida. */
+    if((num>=10 && num<=35)||(num>=141 && num<=215)){
       const url='/paginas/'+num+'.webp';
       const response=await fetch(url,{method:'HEAD',cache:'force-cache'});
       if(response.ok){pfaPdfPageCache.set(num,url);return url;}
