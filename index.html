@@ -294,6 +294,13 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 @media(max-width:600px){.pfa-install-dialog{padding:7px}.pfa-install-panel{padding:9px;max-height:calc(100dvh - 14px)}.pfa-install-hero{max-height:28dvh!important}.pfa-install-heading h2{font-size:21px}}
 
 .pfa-home-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 17px}.pfa-home-buttons .btn{min-height:48px;text-align:center;justify-content:center;white-space:normal}@media(max-width:620px){.pfa-home-buttons{grid-template-columns:1fr}}
+.pfa-video-section{margin:26px 0 8px;padding:24px 18px;background:#fffdf9;border:1px solid #e5dfd2;border-radius:18px;text-align:center}
+.pfa-video-section h2{font:normal clamp(24px,3.5vw,34px)/1.2 Georgia,serif;margin:8px 0 10px}
+.pfa-video-section>p{font-size:14px;color:#5f7779;margin:0 auto 16px;max-width:590px;line-height:1.65}
+.pfa-video-box{margin:auto;max-width:480px;overflow:hidden;border-radius:14px;background:#09252a;box-shadow:0 9px 24px #173a4030}
+.pfa-video-box video{display:block;width:100%;height:auto;max-height:76vh;object-fit:contain;background:#071c23}
+.pfa-video-audio{display:inline-flex;margin:14px auto 0;background:#174d4f;color:white;border-color:#174d4f;min-height:44px}
+@media(max-width:620px){.pfa-video-section{padding:19px 11px}.pfa-video-box{max-width:100%}}
 /* Ilustracao com regiao clicavel sobre o WhatsApp verde */
 .pfa-feature-art{position:relative;width:100%;overflow:hidden;border-radius:17px;margin:18px 0 4px;box-shadow:0 8px 23px rgba(18,52,53,.12)}
 .pfa-feature-art img{display:block;width:100%;height:auto;object-fit:contain}
@@ -591,6 +598,18 @@ function home(){
   <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
   <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
  </section>
+ <section class="pfa-video-section" aria-label="Apresentação em vídeo da PFA">
+  <span class="kicker">Conheça nossa proposta</span>
+  <h2>A Psicanálise da Formação Afetiva em vídeo</h2>
+  <p>Ao chegar a esta seção, o vídeo começa discretamente, sem som. Para ouvir a narração, toque em “Ativar som”.</p>
+  <div class="pfa-video-box">
+   <video id="pfaIntroductionVideo" playsinline muted preload="none" controls poster="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png">
+    <source src="/pfa-apresentacao-mobile.mp4" type="video/mp4">
+    Seu navegador não consegue reproduzir este vídeo.
+   </video>
+  </div>
+  <button class="btn pfa-video-audio" id="pfaIntroAudio" type="button">🔊 Ativar som da apresentação</button>
+ </section>
  <section class="pfa-intro-presentation" aria-label="O que é a PFA">
   <span class="kicker">Uma compreensão integral da pessoa</span>
   <h2>O que é a Psicanálise da Formação Afetiva?</h2>
@@ -644,7 +663,27 @@ function accountView(){
   <div class="panel" style="margin-top:14px"><h3>Instalar Divã</h3><p>Você pode adicionar o aplicativo à tela inicial sem precisar se inscrever.</p><button class="btn outline" type="button" id="pfaAccountInstall">↓ Instalar aplicativo</button></div>
   <div class="panel" style="margin-top:14px"><h3>Seus arquivos</h3><p>Suas reflexões e seu progresso ficam neste navegador.</p><button class="btn outline" type="button" data-go="backup">Abrir backup das anotações</button></div>`}
 function studioView(){return `<div class="section"><div><span class="kicker">Área exclusiva</span><h2>Estúdio PFA</h2><p>Administração dos inscritos. Requer login e configuração do armazenamento seguro.</p></div></div><div class="panel" id="pfaStudio"><p>Verificando acesso administrativo...</p></div>`}
-function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='account'?accountView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();}
+function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='account'?accountView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();if(state.view==='home')setupPfaIntroVideo();}
+let pfaIntroObserver=null;
+function setupPfaIntroVideo(){
+ if(pfaIntroObserver){pfaIntroObserver.disconnect();pfaIntroObserver=null;}
+ const video=document.getElementById('pfaIntroductionVideo'),audio=document.getElementById('pfaIntroAudio');
+ if(!video)return;
+ video.muted=true;
+ audio?.addEventListener('click',()=>{
+  video.muted=false;video.volume=1;
+  if(audio)audio.textContent='🔊 Som ativado';
+  video.play().catch(()=>{});
+ });
+ pfaIntroObserver=new IntersectionObserver(entries=>{
+  for(const entry of entries){
+   if(entry.isIntersecting && entry.intersectionRatio>=0.5){
+    if(!video.ended)video.play().catch(()=>{});
+   }else{video.pause();}
+  }
+ },{threshold:[0,0.5,0.75]});
+ pfaIntroObserver.observe(video);
+}
 function bindUI(v){
   pfaBindPageImages(v);
 v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
