@@ -293,6 +293,7 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-install-heading{padding-right:0}
 @media(max-width:600px){.pfa-install-dialog{padding:7px}.pfa-install-panel{padding:9px;max-height:calc(100dvh - 14px)}.pfa-install-hero{max-height:28dvh!important}.pfa-install-heading h2{font-size:21px}}
 
+.pfa-home-buttons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 17px}.pfa-home-buttons .btn{min-height:48px;text-align:center;justify-content:center;white-space:normal}@media(max-width:620px){.pfa-home-buttons{grid-template-columns:1fr}}
 /* Ilustracao com regiao clicavel sobre o WhatsApp verde */
 .pfa-feature-art{position:relative;width:100%;overflow:hidden;border-radius:17px;margin:18px 0 4px;box-shadow:0 8px 23px rgba(18,52,53,.12)}
 .pfa-feature-art img{display:block;width:100%;height:auto;object-fit:contain}
@@ -572,13 +573,11 @@ const lessonCount=m=>m.lessons?.length||0;
 function stats(){return `<div class="stats"><div class="stat"><label>Módulos</label><strong>${catalog.modules.length}</strong><small>trilha de formação</small></div><div class="stat"><label>Lições organizadas</label><strong>${totalLessons()}</strong><small>com material original</small></div><div class="stat"><label>Páginas da apostila</label><strong>215</strong><small>preservadas integralmente</small></div><div class="stat"><label>Meu progresso</label><strong>${pcent(done()/Math.max(1,totalLessons()))}%</strong><small>${done()} lições concluídas</small></div></div>`}
 function moduleCards(list){if(!list.length)return '<div class="empty">Nenhum módulo corresponde à busca.</div>';return `<div class="card-grid">${list.map(m=>`<article class="course-card" data-module="${escapeHtml(m.id)}" role="button" tabindex="0" aria-label="Abrir módulo ${escapeHtml(m.title)}"><div class="card-main"><span class="card-icon" aria-hidden="true">${m.lessons?.find(l=>l.pages?.length)?.pages?.[0]?`<img src="${PAGE_ASSETS[String(m.lessons.find(l=>l.pages?.length).pages[0])]}" data-pfa-page="${m.lessons.find(l=>l.pages?.length).pages[0]}" alt="" loading="lazy">`:m.id===KIDS_MODULE_ID?`<img src="https://i.ytimg.com/vi/ReS3bEFrHfY/hqdefault.jpg" alt="" loading="lazy">`:escapeHtml(m.icon||'◇')}</span><div class="card-info"><span class="num">MÓDULO ${String(catalog.modules.indexOf(m)+1).padStart(2,'0')}</span><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.description||'')}</p></div><span class="card-chevron" aria-hidden="true">›</span></div><div class="bar"><i style="width:${completion(m)}%"></i></div><div class="card-foot"><span>${(m.id===VIDEO_MODULE_ID||m.id===KIDS_MODULE_ID)?`${lessonCount(m)} vídeo${lessonCount(m)===1?"":"s"}`:`${lessonCount(m)} lições`}</span><span>${m.id===VIDEO_MODULE_ID&&!m.lessons.length?"Aguardando vídeos":`${completion(m)}% concluído`}</span></div></article>`).join('')}</div>`}
 function home(){
- return `<div class="pfa-intro-shortcut"><span>Já conhece o Divã PFA?</span><button class="btn gold" data-go="catalog" type="button">Ir direto aos estudos →</button></div>
- <section class="pfa-intro-hero" aria-label="Apresentação da Psicanálise da Formação Afetiva">
-  <span class="pfa-intro-label">DIVÃ PFA · PSICANÁLISE DA FORMAÇÃO AFETIVA</span>
-  <h1>Compreender a si mesmo é o começo de uma transformação.</h1>
-  <p>Um espaço gratuito para conhecer o ser humano, sua história afetiva, seus pensamentos, sentimentos, escolhas e sua dimensão espiritual.</p>
-  <div class="pfa-intro-actions"><button type="button" class="btn gold" data-go="catalog">Conhecer o curso gratuito →</button><a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20seus%20atendimentos." target="_blank" rel="noopener noreferrer">Conversar com Fernando pelo WhatsApp</a></div>
- </section>
+ return `<div class="pfa-home-buttons" aria-label="Acessos rápidos">
+  <button class="btn gold" data-go="catalog" type="button">Ir direto aos estudos →</button>
+  <a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos." target="_blank" rel="noopener noreferrer">Conversar com Fernando</a>
+  <a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Acompanhar o canal PFA</a>
+ </div>
  <section class="pfa-feature-art" aria-label="Conheça a Psicanálise da Formação Afetiva">
   <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
   <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
