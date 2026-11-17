@@ -293,6 +293,13 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-install-heading{padding-right:0}
 @media(max-width:600px){.pfa-install-dialog{padding:7px}.pfa-install-panel{padding:9px;max-height:calc(100dvh - 14px)}.pfa-install-hero{max-height:28dvh!important}.pfa-install-heading h2{font-size:21px}}
 
+/* Ilustracao com regiao clicavel sobre o WhatsApp verde */
+.pfa-feature-art{position:relative;width:100%;overflow:hidden;border-radius:17px;margin:18px 0 4px;box-shadow:0 8px 23px rgba(18,52,53,.12)}
+.pfa-feature-art img{display:block;width:100%;height:auto;object-fit:contain}
+.pfa-feature-hotspot{position:absolute;left:41%;top:74%;width:38%;height:23%;z-index:2;border-radius:12px;cursor:pointer}
+.pfa-feature-hotspot:focus-visible{outline:4px solid #78e4ab;outline-offset:-4px;background:#20a85c22}
+.pfa-feature-hotspot:hover{background:#20a85c14}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 /* Apresentacao inicial: estudo livre, sem reproduzir video automaticamente */
 .pfa-intro-shortcut{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:14px;font-size:12px;color:#677c81}
 .pfa-intro-hero{background:radial-gradient(circle at 85% 10%,#3f7160 0,transparent 34%),linear-gradient(120deg,#0c252c,#16424a 65%,#306d64);border:1px solid #af8b4c;border-radius:20px;padding:clamp(25px,5vw,58px);color:#fff;position:relative;overflow:hidden;min-height:325px}
@@ -570,6 +577,10 @@ function home(){
   <h1>Compreender a si mesmo é o começo de uma transformação.</h1>
   <p>Um espaço gratuito para conhecer o ser humano, sua história afetiva, seus pensamentos, sentimentos, escolhas e sua dimensão espiritual.</p>
   <div class="pfa-intro-actions"><button type="button" class="btn gold" data-go="catalog">Conhecer o curso gratuito →</button><a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20seus%20atendimentos." target="_blank" rel="noopener noreferrer">Conversar com Fernando pelo WhatsApp</a></div>
+ </section>
+ <section class="pfa-feature-art" aria-label="Conheça a Psicanálise da Formação Afetiva">
+  <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
+  <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
  </section>
  <section class="pfa-intro-presentation" aria-label="O que é a PFA">
   <span class="kicker">Uma compreensão integral da pessoa</span>
