@@ -341,6 +341,14 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 @media(max-width:620px){.pfa-intro-values{grid-template-columns:1fr}.pfa-intro-hero{padding:25px 19px}.pfa-intro-actions .btn{width:100%}.pfa-floating-whatsapp{right:12px;bottom:calc(94px + env(safe-area-inset-bottom,0px));font-size:11px;padding:9px 12px}}
 @media(prefers-reduced-motion:no-preference){.pfa-intro-hero{animation:pfaIntroAppear .65s ease-out both}@keyframes pfaIntroAppear{from{opacity:.45;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}}
 
+.pfa-products-categories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:18px}
+.pfa-category-card{position:relative;background:#fffdf8;border:1px solid #d7ddd5;border-radius:17px;padding:25px 19px;min-height:190px;text-align:left;color:#23434a;box-shadow:0 7px 18px rgba(26,51,52,.06);display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+.pfa-category-card:hover,.pfa-category-card:focus-visible{border-color:#ba9051;background:#fffbef}
+.pfa-category-icon{font-size:30px;color:#b28c4a}
+.pfa-category-title{font:normal 27px Georgia,serif}
+.pfa-category-desc{font-size:13px;line-height:1.5;color:#5d7273;padding-right:10px}
+.pfa-category-chevron{position:absolute;right:17px;bottom:17px;font-size:26px;color:#a37e3c}
+@media(max-width:620px){.pfa-products-categories{grid-template-columns:1fr;gap:10px}.pfa-category-card{min-height:118px;padding:18px 46px 18px 19px}.pfa-category-title{font-size:25px}.pfa-category-icon{font-size:25px}.pfa-category-chevron{bottom:30px}}
 /* Produtos a venda: area separada da formacao gratuita */
 .pfa-shop-teaser{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#3a5559;color:#fff;border:1px solid #71888a;border-radius:19px;padding:24px 28px;margin:0 0 18px}
 .pfa-shop-teaser span{font-size:11px;font-weight:800;letter-spacing:.17em;color:#e6cc95}
@@ -593,7 +601,7 @@ if(!catalog?.modules?.length)catalog=copy(CORE_COURSE);
 else catalog=ensureVideoModule(catalog);
 catalog=ensureKidsModule(catalog);
 let progress=load(STORAGE.progress,{}), notes=load(STORAGE.notes,{});
-let state={view:'home',mod:null,lesson:null,slide:0,term:'',filter:'all',journalText:''};
+let state={view:'home',mod:null,lesson:null,slide:0,term:'',filter:'all',journalText:'',productCategory:null};
 const corePages=215;
 function persistCatalog(){catalog.updatedAt=now();try{localStorage.setItem(STORAGE.course,JSON.stringify(catalog));}catch(e){alert('Armazenamento indisponível. Exporte um backup.')} render();}
 function persistProgress(){try{localStorage.setItem(STORAGE.progress,JSON.stringify(progress))}catch(e){alert('Progresso não pôde ser salvo')}render();}
@@ -606,7 +614,7 @@ const done=()=>allLessons().filter(l=>!!progress[l.id]).length;
 const pcent=n=>Math.round(n*100)||0;
 const completion=m=>m.lessons?.length?pcent(m.lessons.filter(l=>progress[l.id]).length/m.lessons.length):0;
 function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(notify.timeout);notify.timeout=setTimeout(()=>t.classList.add('hidden'),3200)}
-function navigate(view,mod=null,lesson=null){state.view=view;state.mod=mod;state.lesson=lesson;state.slide=0;state.term='';state.filter='all';render();window.scrollTo({top:0,behavior:'instant'})}
+function navigate(view,mod=null,lesson=null){if(view==='products')state.productCategory=null;state.view=view;state.mod=mod;state.lesson=lesson;state.slide=0;state.term='';state.filter='all';render();window.scrollTo({top:0,behavior:'instant'})}
 const pageLabel=l=>l.pages?.length?l.pages.length===1?`Página ${l.pages[0]}`:`Páginas ${l.pages[0]}–${l.pages.at(-1)}`:l.video?'Videoaula':'Aula adicional';
 const lessonCount=m=>m.lessons?.length||0;
 function stats(){return `<div class="stats"><div class="stat"><label>Módulos</label><strong>${catalog.modules.length}</strong><small>trilha de formação</small></div><div class="stat"><label>Lições organizadas</label><strong>${totalLessons()}</strong><small>com material original</small></div><div class="stat"><label>Páginas da apostila</label><strong>215</strong><small>preservadas integralmente</small></div><div class="stat"><label>Meu progresso</label><strong>${pcent(done()/Math.max(1,totalLessons()))}%</strong><small>${done()} lições concluídas</small></div></div>`}
@@ -652,21 +660,27 @@ function home(){
 }
 const PFA_PRODUCTS=[];
 function productsView(){
- const cards=PFA_PRODUCTS.map(item=>{
-  const name=escapeHtml(item.title||'Produto');
-  const description=escapeHtml(item.description||'');
+ const categories=[
+  {id:'livros',title:'Livros',icon:'📚',description:'Romances e obras de Fernando Frascari.'},
+  {id:'apostilas',title:'Apostilas',icon:'▤',description:'Materiais didáticos e de aprofundamento.'},
+  {id:'cursos',title:'Cursos',icon:'▦',description:'Formações e cursos complementares.'}
+ ];
+ if(!state.productCategory){
+  return `<section class="pfa-products-hero"><span class="pfa-products-label">CATÁLOGO • PFA</span><h1>Produtos à venda</h1><p>Escolha uma categoria para conhecer nossas publicações e formações.</p></section>
+  <div class="pfa-products-categories">${categories.map(c=>`<button class="pfa-category-card" type="button" data-product-category="${c.id}"><span class="pfa-category-icon" aria-hidden="true">${c.icon}</span><span class="pfa-category-title">${c.title}</span><span class="pfa-category-desc">${c.description}</span><span class="pfa-category-chevron" aria-hidden="true">›</span></button>`).join('')}</div>`;
+ }
+ const category=categories.find(c=>c.id===state.productCategory);
+ if(!category){state.productCategory=null;return productsView();}
+ const entries=PFA_PRODUCTS.filter(item=>item.category===category.id);
+ const cards=entries.map(item=>{
+  const name=escapeHtml(item.title||'Produto'),description=escapeHtml(item.description||'');
   const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
   const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Conhecer produto ↗</a>':'';
   return '<article class="pfa-product-card">'+image+'<div class="pfa-product-info"><h3>'+name+'</h3><p>'+description+'</p>'+action+'</div></article>';
  }).join('');
- return `<section class="pfa-products-hero">
-  <span class="pfa-products-label">BIBLIOTECA • PFA</span>
-  <h1>Produtos à venda</h1>
-  <p>Livros, apostilas e cursos para aprofundar seus estudos e conhecer outras obras de Fernando Frascari.</p>
- </section>
- <section class="pfa-products-content">
-  ${PFA_PRODUCTS.length?'<div class="pfa-products-grid">'+cards+'</div>':'<div class="pfa-products-empty"><span aria-hidden="true">▤</span><h2>Nosso catálogo está sendo preparado</h2><p>Em breve, você encontrará aqui os livros, cursos e apostilas disponíveis. O curso gratuito de Psicanálise da Formação Afetiva continua disponível na área de estudos.</p><button type="button" class="btn gold" data-go="catalog">Acessar o curso gratuito →</button></div>'}
- </section>`;
+ return `<button type="button" class="back" id="pfaBackToCategories">← Voltar às categorias</button>
+ <section class="pfa-products-hero"><span class="pfa-products-label">PRODUTOS À VENDA</span><h1>${category.title}</h1><p>${category.description}</p></section>
+ <section class="pfa-products-content">${entries.length?'<div class="pfa-products-grid">'+cards+'</div>':'<div class="pfa-products-empty"><span aria-hidden="true">▤</span><h2>Em preparação</h2><p>Os produtos desta categoria serão publicados aqui em breve.</p></div>'}</section>`;
 }
 function catalogView(){let list=catalog.modules.filter(m=>(`${m.title} ${m.description} ${m.lessons.map(l=>l.title).join(' ')}`).toLowerCase().includes(state.term.toLowerCase()));if(state.filter==='pending')list=list.filter(m=>completion(m)<100);if(state.filter==='done')list=list.filter(m=>completion(m)===100&&m.lessons.length);return `<div class="section"><div><span class="kicker">Curso completo</span><h2>Todos os módulos</h2><p>Os módulos aparecem um abaixo do outro, como no aplicativo original. Você também pode acrescentar aulas.</p></div></div><div class="searchtools"><input id="search" placeholder="Pesquisar módulos e assuntos..." value="${escapeHtml(state.term)}"><select id="statusFilter"><option value="all" ${state.filter==='all'?'selected':''}>Todos os módulos</option><option value="pending" ${state.filter==='pending'?'selected':''}>Em andamento</option><option value="done" ${state.filter==='done'?'selected':''}>Concluídos</option></select></div><div id="filteredCards">${moduleCards(list)}</div>`}
 function renderVideoLessonCard(m,l,i){const vid=videoId(l.video),thumb=vid?`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`:'';return `<article class="lesson-media-card"><div class="lesson-media-thumb">${thumb?`<img src="${thumb}" alt="Capa da videoaula ${escapeHtml(l.title)}" loading="lazy">`:'<div class="unavailable">Miniatura indisponível</div>'}<span class="lesson-media-play" aria-hidden="true">▶</span></div><div class="lesson-media-body"><span class="lesson-media-kicker">${m.id===VIDEO_MODULE_ID?'Aula gravada':`Lição ${String(i+1).padStart(2,'0')}`}</span><h3>${escapeHtml(l.title)}</h3><p class="lesson-media-meta">${escapeHtml(pageLabel(l))}${l.content?' • Texto incluído':''}</p><div class="lesson-media-actions"><label class="done-toggle" title="Marcar lição concluída"><input aria-label="Concluir: ${escapeHtml(l.title)}" type="checkbox" data-check="${escapeHtml(l.id)}" ${progress[l.id]?'checked':''}>Concluída</label><button class="btn outline small" data-lesson="${escapeHtml(m.id)}|${escapeHtml(l.id)}">Estudar →</button></div></div></article>`}
@@ -731,6 +745,12 @@ function setupPfaIntroVideo(){
 }
 function bindUI(v){
   pfaBindPageImages(v);
+  v.querySelectorAll('[data-product-category]').forEach(button=>button.addEventListener('click',()=>{
+   state.productCategory=button.dataset.productCategory;render();window.scrollTo({top:0,behavior:'instant'});
+  }));
+  v.querySelector('#pfaBackToCategories')?.addEventListener('click',()=>{
+   state.productCategory=null;render();window.scrollTo({top:0,behavior:'instant'});
+  });
 v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
 function updateSearch(){let list=catalog.modules.filter(m=>`${m.title} ${m.description} ${m.lessons.map(l=>l.title).join(' ')}`.toLowerCase().includes(state.term.toLowerCase()));if(state.filter==='pending')list=list.filter(m=>completion(m)<100);if(state.filter==='done')list=list.filter(m=>completion(m)===100&&m.lessons.length);document.getElementById('filteredCards').innerHTML=moduleCards(list);document.querySelectorAll('#filteredCards [data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})})}
 function changeSlide(n,isAbsolute=false){let m=moduleById(state.mod),l=lessonById(m,state.lesson);if(!l)return;const input=document.getElementById('lessonNote');const draft=input?.value;state.slide=Math.max(0,Math.min((l.pages||[]).length-1,isAbsolute?n:state.slide+n));render();if(draft!==undefined){const newInput=document.getElementById('lessonNote');if(newInput)newInput.value=draft;}if(!document.getElementById('imageViewer').hidden)updateImageViewer();}
