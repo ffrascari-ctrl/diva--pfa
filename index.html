@@ -350,11 +350,11 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-category-chevron{position:absolute;right:17px;bottom:17px;font-size:26px;color:#a37e3c}
 @media(max-width:620px){.pfa-products-categories{grid-template-columns:1fr;gap:10px}.pfa-category-card{min-height:118px;padding:18px 46px 18px 19px}.pfa-category-title{font-size:25px}.pfa-category-icon{font-size:25px}.pfa-category-chevron{bottom:30px}}
 /* Produtos a venda: area separada da formacao gratuita */
-.pfa-shop-teaser{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#3a5559;color:#fff;border:1px solid #71888a;border-radius:19px;padding:24px 28px;margin:0 0 18px}
-.pfa-shop-teaser span{font-size:11px;font-weight:800;letter-spacing:.17em;color:#e6cc95}
-.pfa-shop-teaser h2{font:normal clamp(26px,3vw,34px)/1.2 Georgia,serif;margin:7px 0}
-.pfa-shop-teaser p{max-width:480px;color:#e4eded;font-size:14px;margin:0}
-.pfa-shop-teaser-button{background:#fffdf8;color:#234a50;border-color:#fffdf8;font-size:13px;font-weight:750;text-align:center;justify-content:center}
+.pfa-shop-teaser{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:2px;width:100%;min-height:76px;background:#3a5559;color:#fff;border:1px solid #71888a;border-radius:14px;padding:12px 19px;margin:0 0 14px;text-align:left;cursor:pointer}
+.pfa-shop-teaser:hover{background:#30494e}
+.pfa-shop-teaser .pfa-shop-title{font:normal clamp(20px,2.7vw,26px)/1.2 Georgia,serif;color:#fff}
+.pfa-shop-teaser .pfa-shop-subtitle{font-size:12px;color:#e4eded;font-weight:400;letter-spacing:0}
+@media(max-width:620px){.pfa-shop-teaser{padding:11px 16px;min-height:68px}}
 .pfa-products-hero{background:linear-gradient(130deg,#173d45,#3b6160);color:#fff;padding:clamp(27px,5vw,48px);border-radius:20px}
 .pfa-products-label{font-size:11px;letter-spacing:.15em;color:#ead39d;font-weight:800}
 .pfa-products-hero h1{font:normal clamp(32px,5vw,48px)/1.12 Georgia,serif;margin:12px 0}
@@ -627,10 +627,10 @@ function home(){
   <a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos." target="_blank" rel="noopener noreferrer">Interessado em atendimento psicanalítico? Clique aqui</a>
   <a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Acompanhar o canal PFA</a>
  </div>
- <section class="pfa-shop-teaser">
-  <div><span>CATÁLOGO</span><h2>Produtos à venda</h2><p>Romances, cursos e apostilas. Conheça nosso espaço de publicações.</p></div>
-  <button class="btn pfa-shop-teaser-button" type="button" data-go="products">Conhecer o catálogo →</button>
- </section>
+ <button class="pfa-shop-teaser" type="button" data-go="products" aria-label="Produtos à venda: livros, apostilas e cursos">
+  <span class="pfa-shop-title">Produtos à venda</span>
+  <span class="pfa-shop-subtitle">Livros, apostilas e cursos</span>
+ </button>
  <section class="pfa-feature-art" aria-label="Conheça a Psicanálise da Formação Afetiva">
   <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
   <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
