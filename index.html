@@ -372,6 +372,16 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-product-trailer{margin:14px 0}.pfa-product-trailer h4{font-size:14px;margin:0 0 8px}.pfa-product-trailer video{width:100%;max-height:400px;background:#132c32;border-radius:10px;display:block}
 .pfa-product-info{padding:17px}.pfa-product-info h3{font:normal 23px Georgia,serif;margin:0 0 8px}.pfa-product-info p{font-size:13px;color:#587274;line-height:1.55}
 @media(max-width:760px){.menu{grid-template-columns:repeat(5,minmax(0,1fr))}.menu button{font-size:9px}.pfa-products-grid{grid-template-columns:1fr}.pfa-shop-teaser-button{width:100%}}
+.pfa-products-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pfa-book-tile{display:flex;flex-direction:column;align-items:stretch;gap:9px;padding:10px;background:#fffdf8;border:1px solid #e3e2d8;border-radius:15px;cursor:pointer;min-width:0;text-align:center;color:#23444b}
+.pfa-book-tile:hover,.pfa-book-tile:focus-visible{border-color:#ba9051;box-shadow:0 7px 20px #1b434322}
+.pfa-book-tile .pfa-product-image{aspect-ratio:2/3;object-fit:contain;max-height:290px;border-radius:8px;background:#f3f0e8}
+.pfa-book-title{font:normal 17px/1.3 Georgia,serif}
+.pfa-product-detail{display:grid;grid-template-columns:minmax(125px,35%) minmax(0,1fr);gap:24px;align-items:start;background:#fffdf8;border-radius:17px;border:1px solid #e3e2d8;padding:20px;margin-top:16px}
+.pfa-product-detail-cover img{width:100%;max-height:430px;object-fit:contain;border-radius:9px}
+.pfa-product-detail-body h1{font:normal clamp(27px,4vw,37px)/1.2 Georgia,serif;margin:9px 0}
+.pfa-product-detail-body>p{line-height:1.65;color:#526b6b}
+@media(max-width:620px){.pfa-products-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.pfa-product-detail{grid-template-columns:1fr}.pfa-product-detail-cover img{display:block;max-width:230px;margin:auto}}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -603,7 +613,7 @@ if(!catalog?.modules?.length)catalog=copy(CORE_COURSE);
 else catalog=ensureVideoModule(catalog);
 catalog=ensureKidsModule(catalog);
 let progress=load(STORAGE.progress,{}), notes=load(STORAGE.notes,{});
-let state={view:'home',mod:null,lesson:null,slide:0,term:'',filter:'all',journalText:'',productCategory:null};
+let state={view:'home',mod:null,lesson:null,slide:0,term:'',filter:'all',journalText:'',productCategory:null,productId:null};
 const corePages=215;
 function persistCatalog(){catalog.updatedAt=now();try{localStorage.setItem(STORAGE.course,JSON.stringify(catalog));}catch(e){alert('Armazenamento indisponível. Exporte um backup.')} render();}
 function persistProgress(){try{localStorage.setItem(STORAGE.progress,JSON.stringify(progress))}catch(e){alert('Progresso não pôde ser salvo')}render();}
@@ -616,7 +626,7 @@ const done=()=>allLessons().filter(l=>!!progress[l.id]).length;
 const pcent=n=>Math.round(n*100)||0;
 const completion=m=>m.lessons?.length?pcent(m.lessons.filter(l=>progress[l.id]).length/m.lessons.length):0;
 function notify(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(notify.timeout);notify.timeout=setTimeout(()=>t.classList.add('hidden'),3200)}
-function navigate(view,mod=null,lesson=null){if(view==='products')state.productCategory=null;state.view=view;state.mod=mod;state.lesson=lesson;state.slide=0;state.term='';state.filter='all';render();window.scrollTo({top:0,behavior:'instant'})}
+function navigate(view,mod=null,lesson=null){if(view==='products'){state.productCategory=null;state.productId=null;}state.view=view;state.mod=mod;state.lesson=lesson;state.slide=0;state.term='';state.filter='all';render();window.scrollTo({top:0,behavior:'instant'})}
 const pageLabel=l=>l.pages?.length?l.pages.length===1?`Página ${l.pages[0]}`:`Páginas ${l.pages[0]}–${l.pages.at(-1)}`:l.video?'Videoaula':'Aula adicional';
 const lessonCount=m=>m.lessons?.length||0;
 function stats(){return `<div class="stats"><div class="stat"><label>Módulos</label><strong>${catalog.modules.length}</strong><small>trilha de formação</small></div><div class="stat"><label>Lições organizadas</label><strong>${totalLessons()}</strong><small>com material original</small></div><div class="stat"><label>Páginas da apostila</label><strong>215</strong><small>preservadas integralmente</small></div><div class="stat"><label>Meu progresso</label><strong>${pcent(done()/Math.max(1,totalLessons()))}%</strong><small>${done()} lições concluídas</small></div></div>`}
@@ -672,14 +682,22 @@ function productsView(){
   <div class="pfa-products-categories">${categories.map(c=>`<button class="pfa-category-card" type="button" data-product-category="${c.id}"><span class="pfa-category-icon" aria-hidden="true">${c.icon}</span><span class="pfa-category-title">${c.title}</span><span class="pfa-category-desc">${c.description}</span><span class="pfa-category-chevron" aria-hidden="true">›</span></button>`).join('')}</div>`;
  }
  const category=categories.find(c=>c.id===state.productCategory);
- if(!category){state.productCategory=null;return productsView();}
+ if(!category){state.productCategory=null;state.productId=null;return productsView();}
  const entries=PFA_PRODUCTS.filter(item=>item.category===category.id);
- const cards=entries.map(item=>{
-  const name=escapeHtml(item.title||'Produto'),description=escapeHtml(item.description||'');
-  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
+ if(state.productId){
+  const item=entries.find(item=>item.id===state.productId);
+  if(!item){state.productId=null;return productsView();}
+  const name=escapeHtml(item.title||'Produto');
+  const image=item.image?'<img src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'';
+  const video=item.video?'<div class="pfa-product-trailer"><h3>Assista à apresentação do livro</h3><video controls playsinline preload="none" poster="'+escapeHtml(item.image||'')+'"><source src="'+escapeHtml(item.video)+'" type="video/mp4">Seu navegador não pode reproduzir este vídeo.</video></div>':'';
   const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Comprar na Amazon ↗</a>':'';
-  const video=item.video?'<div class="pfa-product-trailer"><h4>Assista à apresentação do livro</h4><video controls playsinline preload="none" poster="'+escapeHtml(item.image||'')+'"><source src="'+escapeHtml(item.video)+'" type="video/mp4">Seu navegador não pode reproduzir este vídeo.</video></div>':'';
-  return '<article class="pfa-product-card">'+image+'<div class="pfa-product-info"><h3>'+name+'</h3><p class="pfa-product-author">'+escapeHtml(item.author||'')+'</p><p>'+description+'</p>'+video+action+'</div></article>';
+  return `<button type="button" class="back" id="pfaBackToProducts">← Voltar a ${category.title}</button>
+  <section class="pfa-product-detail"><div class="pfa-product-detail-cover">${image}</div><div class="pfa-product-detail-body"><span class="kicker">PRODUTOS À VENDA • ${category.title.toUpperCase()}</span><h1>${name}</h1><p class="pfa-product-author">${escapeHtml(item.author||'')}</p><p>${escapeHtml(item.description||'')}</p>${video}${action}</div></section>`;
+ }
+ const cards=entries.map(item=>{
+  const name=escapeHtml(item.title||'Produto');
+  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
+  return '<button type="button" class="pfa-book-tile" data-product-id="'+escapeHtml(item.id)+'" aria-label="Conhecer '+name+'">'+image+'<span class="pfa-book-title">'+name+'</span></button>';
  }).join('');
  return `<button type="button" class="back" id="pfaBackToCategories">← Voltar às categorias</button>
  <section class="pfa-products-hero"><span class="pfa-products-label">PRODUTOS À VENDA</span><h1>${category.title}</h1><p>${category.description}</p></section>
@@ -749,12 +767,18 @@ function setupPfaIntroVideo(){
 function bindUI(v){
   pfaBindPageImages(v);
   v.querySelectorAll('[data-product-category]').forEach(button=>button.addEventListener('click',()=>{
-   state.productCategory=button.dataset.productCategory;render();window.scrollTo({top:0,behavior:'instant'});
+   state.productCategory=button.dataset.productCategory;state.productId=null;render();window.scrollTo({top:0,behavior:'instant'});
   }));
   v.querySelector('#pfaBackToCategories')?.addEventListener('click',()=>{
-   state.productCategory=null;render();window.scrollTo({top:0,behavior:'instant'});
+   state.productCategory=null;state.productId=null;render();window.scrollTo({top:0,behavior:'instant'});
   });
-v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
+v.querySelectorAll('[data-product-id]').forEach(button=>button.addEventListener('click',()=>{
+   state.productId=button.dataset.productId;render();window.scrollTo({top:0,behavior:'instant'});
+  }));
+  v.querySelector('#pfaBackToProducts')?.addEventListener('click',()=>{
+   state.productId=null;render();window.scrollTo({top:0,behavior:'instant'});
+  });
+  v.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.go)));v.querySelectorAll('[data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));if(b.matches('.course-card'))b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})});v.querySelectorAll('[data-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.lesson.split('|');navigate('lesson',m,l)}));v.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('change',()=>{progress[b.dataset.check]=b.checked;persistProgress()}));v.querySelectorAll('[data-edit-module]').forEach(b=>b.addEventListener('click',()=>editModule(b.dataset.editModule)));v.querySelectorAll('[data-edit-lesson]').forEach(b=>b.addEventListener('click',()=>{let [m,l]=b.dataset.editLesson.split('|');editLesson(m,l)}));v.querySelector('#newModule')?.addEventListener('click',()=>editModule());v.querySelector('#search')?.addEventListener('input',e=>{state.term=e.target.value;updateSearch()});v.querySelector('#statusFilter')?.addEventListener('change',e=>{state.filter=e.target.value;updateSearch()});v.querySelector('#openViewer')?.addEventListener('click',openImageViewer);v.querySelector('#openViewerAction')?.addEventListener('click',openImageViewer);v.querySelector('#prevSlide')?.addEventListener('click',()=>changeSlide(-1));v.querySelector('#nextSlide')?.addEventListener('click',()=>changeSlide(1));v.querySelectorAll('[data-slide]').forEach(b=>b.addEventListener('click',()=>changeSlide(Number(b.dataset.slide),true)));v.querySelector('#prevLesson')?.addEventListener('click',()=>stepLesson(-1));v.querySelector('#nextLesson')?.addEventListener('click',()=>stepLesson(1));v.querySelector('#doneLesson')?.addEventListener('click',()=>{progress[state.lesson]=!progress[state.lesson];persistProgress()});v.querySelector('#saveNote')?.addEventListener('click',()=>{notes[state.lesson]=v.querySelector('#lessonNote')?.value||'';persistNotes();notify('Reflexão salva neste navegador.')});v.querySelector('#exportBackup')?.addEventListener('click',exportBackup);v.querySelector('#importBackup')?.addEventListener('click',()=>document.getElementById('backupPicker').click());v.querySelector('#eraseProgress')?.addEventListener('click',()=>{if(confirm('Apagar suas marcações de estudo?')){progress={};persistProgress();notify('Progresso apagado')}})}
 function updateSearch(){let list=catalog.modules.filter(m=>`${m.title} ${m.description} ${m.lessons.map(l=>l.title).join(' ')}`.toLowerCase().includes(state.term.toLowerCase()));if(state.filter==='pending')list=list.filter(m=>completion(m)<100);if(state.filter==='done')list=list.filter(m=>completion(m)===100&&m.lessons.length);document.getElementById('filteredCards').innerHTML=moduleCards(list);document.querySelectorAll('#filteredCards [data-module]').forEach(b=>{b.addEventListener('click',()=>navigate('module',b.dataset.module));b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();navigate('module',b.dataset.module)}})})}
 function changeSlide(n,isAbsolute=false){let m=moduleById(state.mod),l=lessonById(m,state.lesson);if(!l)return;const input=document.getElementById('lessonNote');const draft=input?.value;state.slide=Math.max(0,Math.min((l.pages||[]).length-1,isAbsolute?n:state.slide+n));render();if(draft!==undefined){const newInput=document.getElementById('lessonNote');if(newInput)newInput.value=draft;}if(!document.getElementById('imageViewer').hidden)updateImageViewer();}
 function stepLesson(delta){const flat=catalog.modules.flatMap(m=>m.lessons.map(l=>({m,l})));let i=flat.findIndex(x=>x.l.id===state.lesson);let x=flat[i+delta];if(x)navigate('lesson',x.m.id,x.l.id)}
