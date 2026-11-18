@@ -368,6 +368,7 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-product-card{overflow:hidden;background:#fffdf8;border:1px solid #e3e2d8;border-radius:16px}
 .pfa-product-image{display:block;width:100%;max-height:330px;object-fit:contain;background:#f0efe8}
 .pfa-product-placeholder{display:grid;place-items:center;height:170px;background:#e9eee9;font-size:50px;color:#49716b}
+.pfa-product-author{font-size:12px!important;color:#8a7657!important;letter-spacing:.03em}.pfa-product-action{display:inline-flex;background:#204d51;border:1px solid #204d51;color:#fff!important;text-decoration:none;font-weight:700;margin-top:8px}
 .pfa-product-info{padding:17px}.pfa-product-info h3{font:normal 23px Georgia,serif;margin:0 0 8px}.pfa-product-info p{font-size:13px;color:#587274;line-height:1.55}
 @media(max-width:760px){.menu{grid-template-columns:repeat(5,minmax(0,1fr))}.menu button{font-size:9px}.pfa-products-grid{grid-template-columns:1fr}.pfa-shop-teaser-button{width:100%}}
 </style>
@@ -658,7 +659,7 @@ function home(){
   <div class="pfa-intro-care"><h3>Um espaço de escuta e análise</h3><p>Sou Fernando Frascari, psicanalista e idealizador da PFA. Realizo atendimentos individuais on-line para quem deseja compreender melhor sua vida afetiva e suas dificuldades pessoais. Se quiser conversar sobre o atendimento, entre em contato comigo.</p><a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Gostaria%20de%20saber%20mais%20sobre%20um%20atendimento%20psicanal%C3%ADtico." target="_blank" rel="noopener noreferrer">WhatsApp (11) 97823-1054 →</a></div>
  </section>`;
 }
-const PFA_PRODUCTS=[];
+const PFA_PRODUCTS=[{"id":"o-homem-amaldicoado","category":"livros","title":"O Homem Amaldiçoado","author":"Fernando Frascari","description":"Um romance que todo cristão deveria ler.","image":"/capa-o-homem-amaldicoado.jpg","url":"https://www.amazon.com.br/Homem-Amaldi%C3%A7oado-Fernando-Frascari/dp/6525455065","video":"/video-o-homem-amaldicoado.mp4"}];
 function productsView(){
  const categories=[
   {id:'livros',title:'Livros',icon:'📚',description:'Romances e obras de Fernando Frascari.'},
@@ -674,9 +675,9 @@ function productsView(){
  const entries=PFA_PRODUCTS.filter(item=>item.category===category.id);
  const cards=entries.map(item=>{
   const name=escapeHtml(item.title||'Produto'),description=escapeHtml(item.description||'');
-  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
-  const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Conhecer produto ↗</a>':'';
-  return '<article class="pfa-product-card">'+image+'<div class="pfa-product-info"><h3>'+name+'</h3><p>'+description+'</p>'+action+'</div></article>';
+  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
+  const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Comprar na Amazon ↗</a>':'';
+  return '<article class="pfa-product-card">'+image+'<div class="pfa-product-info"><h3>'+name+'</h3><p class="pfa-product-author">'+escapeHtml(item.author||'')+'</p><p>'+description+'</p>'+action+'</div></article>';
  }).join('');
  return `<button type="button" class="back" id="pfaBackToCategories">← Voltar às categorias</button>
  <section class="pfa-products-hero"><span class="pfa-products-label">PRODUTOS À VENDA</span><h1>${category.title}</h1><p>${category.description}</p></section>
