@@ -340,6 +340,28 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
 .pfa-floating-whatsapp:hover{background:#0e5e35}
 @media(max-width:620px){.pfa-intro-values{grid-template-columns:1fr}.pfa-intro-hero{padding:25px 19px}.pfa-intro-actions .btn{width:100%}.pfa-floating-whatsapp{right:12px;bottom:calc(94px + env(safe-area-inset-bottom,0px));font-size:11px;padding:9px 12px}}
 @media(prefers-reduced-motion:no-preference){.pfa-intro-hero{animation:pfaIntroAppear .65s ease-out both}@keyframes pfaIntroAppear{from{opacity:.45;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}}
+
+/* Produtos a venda: area separada da formacao gratuita */
+.pfa-shop-teaser{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#3a5559;color:#fff;border:1px solid #71888a;border-radius:19px;padding:24px 28px;margin:0 0 18px}
+.pfa-shop-teaser span{font-size:11px;font-weight:800;letter-spacing:.17em;color:#e6cc95}
+.pfa-shop-teaser h2{font:normal clamp(26px,3vw,34px)/1.2 Georgia,serif;margin:7px 0}
+.pfa-shop-teaser p{max-width:480px;color:#e4eded;font-size:14px;margin:0}
+.pfa-shop-teaser-button{background:#fffdf8;color:#234a50;border-color:#fffdf8;font-size:13px;font-weight:750;text-align:center;justify-content:center}
+.pfa-products-hero{background:linear-gradient(130deg,#173d45,#3b6160);color:#fff;padding:clamp(27px,5vw,48px);border-radius:20px}
+.pfa-products-label{font-size:11px;letter-spacing:.15em;color:#ead39d;font-weight:800}
+.pfa-products-hero h1{font:normal clamp(32px,5vw,48px)/1.12 Georgia,serif;margin:12px 0}
+.pfa-products-hero p{font-size:15px;line-height:1.7;color:#ebf0ed;max-width:650px}
+.pfa-products-content{margin:20px 0}
+.pfa-products-empty{padding:clamp(23px,5vw,42px);background:#fffdf8;border:1px solid #e5e6dc;border-radius:18px;text-align:center}
+.pfa-products-empty>span{display:block;font-size:42px;color:#b49352;margin-bottom:4px}
+.pfa-products-empty h2{font:normal 27px Georgia,serif;margin:7px 0}
+.pfa-products-empty p{max-width:580px;margin:8px auto 20px;color:#526b6c;line-height:1.7}
+.pfa-products-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.pfa-product-card{overflow:hidden;background:#fffdf8;border:1px solid #e3e2d8;border-radius:16px}
+.pfa-product-image{display:block;width:100%;max-height:330px;object-fit:contain;background:#f0efe8}
+.pfa-product-placeholder{display:grid;place-items:center;height:170px;background:#e9eee9;font-size:50px;color:#49716b}
+.pfa-product-info{padding:17px}.pfa-product-info h3{font:normal 23px Georgia,serif;margin:0 0 8px}.pfa-product-info p{font-size:13px;color:#587274;line-height:1.55}
+@media(max-width:760px){.menu{grid-template-columns:repeat(5,minmax(0,1fr))}.menu button{font-size:9px}.pfa-products-grid{grid-template-columns:1fr}.pfa-shop-teaser-button{width:100%}}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -354,6 +376,7 @@ button.brand:focus-visible{outline:2px solid #dfc488;outline-offset:3px;border-r
  <nav class="menu" id="menu">
   <button data-nav="home" class="active"><span>⌂</span> Início</button>
   <button data-nav="catalog"><span>▦</span> Módulos</button>
+  <button data-nav="products"><span>▤</span> Produtos</button>
   <button data-nav="account"><span>♙</span> Conta</button>
   <button data-nav="studio"><span>🔒</span> Meu Estúdio</button>
   <button type="button" class="pfa-install-menu" id="pfaInstallMenu"><span>↓</span> Instalar aplicativo</button>
@@ -594,6 +617,10 @@ function home(){
   <a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos." target="_blank" rel="noopener noreferrer">Interessado em atendimento psicanalítico? Clique aqui</a>
   <a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Acompanhar o canal PFA</a>
  </div>
+ <section class="pfa-shop-teaser">
+  <div><span>CATÁLOGO</span><h2>Produtos à venda</h2><p>Romances, cursos e apostilas. Conheça nosso espaço de publicações.</p></div>
+  <button class="btn pfa-shop-teaser-button" type="button" data-go="products">Conhecer o catálogo →</button>
+ </section>
  <section class="pfa-feature-art" aria-label="Conheça a Psicanálise da Formação Afetiva">
   <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
   <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
@@ -621,6 +648,24 @@ function home(){
   </div>
   <div class="pfa-channel-invite"><div><span class="kicker">Novidades do curso gratuito</span><h3>Acompanhe a Psicanálise da Formação Afetiva</h3><p>Receba novas aulas, reflexões e avisos sobre a PFA em nosso canal do WhatsApp. Você escolhe se deseja seguir.</p></div><a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Entrar no canal do WhatsApp ↗</a></div>
   <div class="pfa-intro-care"><h3>Um espaço de escuta e análise</h3><p>Sou Fernando Frascari, psicanalista e idealizador da PFA. Realizo atendimentos individuais on-line para quem deseja compreender melhor sua vida afetiva e suas dificuldades pessoais. Se quiser conversar sobre o atendimento, entre em contato comigo.</p><a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Gostaria%20de%20saber%20mais%20sobre%20um%20atendimento%20psicanal%C3%ADtico." target="_blank" rel="noopener noreferrer">WhatsApp (11) 97823-1054 →</a></div>
+ </section>`;
+}
+const PFA_PRODUCTS=[];
+function productsView(){
+ const cards=PFA_PRODUCTS.map(item=>{
+  const name=escapeHtml(item.title||'Produto');
+  const description=escapeHtml(item.description||'');
+  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
+  const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Conhecer produto ↗</a>':'';
+  return '<article class="pfa-product-card">'+image+'<div class="pfa-product-info"><h3>'+name+'</h3><p>'+description+'</p>'+action+'</div></article>';
+ }).join('');
+ return `<section class="pfa-products-hero">
+  <span class="pfa-products-label">BIBLIOTECA • PFA</span>
+  <h1>Produtos à venda</h1>
+  <p>Livros, apostilas e cursos para aprofundar seus estudos e conhecer outras obras de Fernando Frascari.</p>
+ </section>
+ <section class="pfa-products-content">
+  ${PFA_PRODUCTS.length?'<div class="pfa-products-grid">'+cards+'</div>':'<div class="pfa-products-empty"><span aria-hidden="true">▤</span><h2>Nosso catálogo está sendo preparado</h2><p>Em breve, você encontrará aqui os livros, cursos e apostilas disponíveis. O curso gratuito de Psicanálise da Formação Afetiva continua disponível na área de estudos.</p><button type="button" class="btn gold" data-go="catalog">Acessar o curso gratuito →</button></div>'}
  </section>`;
 }
 function catalogView(){let list=catalog.modules.filter(m=>(`${m.title} ${m.description} ${m.lessons.map(l=>l.title).join(' ')}`).toLowerCase().includes(state.term.toLowerCase()));if(state.filter==='pending')list=list.filter(m=>completion(m)<100);if(state.filter==='done')list=list.filter(m=>completion(m)===100&&m.lessons.length);return `<div class="section"><div><span class="kicker">Curso completo</span><h2>Todos os módulos</h2><p>Os módulos aparecem um abaixo do outro, como no aplicativo original. Você também pode acrescentar aulas.</p></div></div><div class="searchtools"><input id="search" placeholder="Pesquisar módulos e assuntos..." value="${escapeHtml(state.term)}"><select id="statusFilter"><option value="all" ${state.filter==='all'?'selected':''}>Todos os módulos</option><option value="pending" ${state.filter==='pending'?'selected':''}>Em andamento</option><option value="done" ${state.filter==='done'?'selected':''}>Concluídos</option></select></div><div id="filteredCards">${moduleCards(list)}</div>`}
@@ -663,7 +708,7 @@ function accountView(){
   <div class="panel" style="margin-top:14px"><h3>Instalar Divã</h3><p>Você pode adicionar o aplicativo à tela inicial sem precisar se inscrever.</p><button class="btn outline" type="button" id="pfaAccountInstall">↓ Instalar aplicativo</button></div>
   <div class="panel" style="margin-top:14px"><h3>Seus arquivos</h3><p>Suas reflexões e seu progresso ficam neste navegador.</p><button class="btn outline" type="button" data-go="backup">Abrir backup das anotações</button></div>`}
 function studioView(){return `<div class="section"><div><span class="kicker">Área exclusiva</span><h2>Estúdio PFA</h2><p>Administração dos inscritos. Requer login e configuração do armazenamento seguro.</p></div></div><div class="panel" id="pfaStudio"><p>Verificando acesso administrativo...</p></div>`}
-function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='account'?accountView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();if(state.view==='home')setupPfaIntroVideo();}
+function render(){const view=document.getElementById('view');const content=state.view==='home'?home():state.view==='catalog'?catalogView():state.view==='module'?moduleView():state.view==='lesson'?lessonView():state.view==='admin'?adminView():state.view==='account'?accountView():state.view==='products'?productsView():state.view==='studio'?studioView():backupView();view.innerHTML=(state.view==='home'?'':'<div class="home-shortcut"><button class="home-link" type="button" data-go="home" aria-label="Voltar à página inicial">⌂ &nbsp; Voltar ao início</button></div>')+content;document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===state.view||(state.view==='module'||state.view==='lesson')&&b.dataset.nav==='catalog'));bindUI(view);if(state.view==='studio')window.pfaLoadStudio?.();if(state.view==='home')setupPfaIntroVideo();}
 let pfaIntroObserver=null;
 function setupPfaIntroVideo(){
  if(pfaIntroObserver){pfaIntroObserver.disconnect();pfaIntroObserver=null;}
