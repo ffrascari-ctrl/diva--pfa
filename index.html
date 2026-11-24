@@ -634,7 +634,7 @@ function moduleCards(list){if(!list.length)return '<div class="empty">Nenhum mó
 function home(){
  return `<div class="pfa-home-buttons" aria-label="Acessos rápidos">
   <button class="btn gold" data-go="catalog" type="button">Ir direto aos estudos →</button>
-  <a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos." target="_blank" rel="noopener noreferrer">Interessado em atendimento psicanalítico? Clique aqui</a>
+  <a onclick="return window.confirm('Você deseja realmente entrar em contato com o psicanalista para obter informações sobre o atendimento individual?')" class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos." target="_blank" rel="noopener noreferrer">Interessado em atendimento psicanalítico? Clique aqui</a>
   <a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Acompanhar o canal PFA</a>
   <a class="btn pfa-group-button" href="https://chat.whatsapp.com/G8FzcNfAQid20b0z94ISmV?s=sh&amp;p=a&amp;iam=2" target="_blank" rel="noopener noreferrer" aria-label="Entrar no Grupo de Estudos e Dúvidas da PFA">Grupo de Estudos e Dúvidas</a>
  </div>
@@ -644,7 +644,7 @@ function home(){
  </button>
  <section class="pfa-feature-art" aria-label="Conheça a Psicanálise da Formação Afetiva">
   <img src="/Div%C3%A3%20PFA_%20Psican%C3%A1lise%20e%20Forma%C3%A7%C3%A3o%20Afetiva.png" alt="Divã PFA: apresentação de Freud e São Tomás de Aquino, autoconhecimento, formação dos afetos e contato para atendimento on-line" loading="eager" decoding="async">
-  <a class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
+  <a onclick="return window.confirm('Você deseja realmente entrar em contato com o psicanalista para obter informações sobre o atendimento individual?')" class="pfa-feature-hotspot" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Conheci%20o%20Div%C3%A3%20PFA%20e%20gostaria%20de%20saber%20mais%20sobre%20os%20atendimentos%20psicanal%C3%ADticos." target="_blank" rel="noopener noreferrer" aria-label="Clique no WhatsApp da imagem para conversar com Fernando"><span class="sr-only">Falar com Fernando pelo WhatsApp</span></a>
  </section>
  <section class="pfa-video-section" aria-label="Apresentação em vídeo da PFA">
   <span class="kicker">Conheça nossa proposta</span>
@@ -668,7 +668,7 @@ function home(){
    <div><span>⚖</span><strong>Virtudes e maturidade</strong><p>Discernir escolhas e desenvolver responsabilidade e liberdade interior.</p></div>
   </div>
   <div class="pfa-channel-invite"><div><span class="kicker">Novidades do curso gratuito</span><h3>Acompanhe a Psicanálise da Formação Afetiva</h3><p>Receba novas aulas, reflexões e avisos sobre a PFA em nosso canal do WhatsApp. Você escolhe se deseja seguir.</p></div><a class="btn pfa-channel-button" href="https://whatsapp.com/channel/0029VbDXee1FMqrSF0CW9F2I" target="_blank" rel="noopener noreferrer">Entrar no canal do WhatsApp ↗</a></div>
-  <div class="pfa-intro-care"><h3>Um espaço de escuta e análise</h3><p>Sou Fernando Frascari, psicanalista e idealizador da PFA. Realizo atendimentos individuais on-line para quem deseja compreender melhor sua vida afetiva e suas dificuldades pessoais. Se quiser conversar sobre o atendimento, entre em contato comigo.</p><a class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Gostaria%20de%20saber%20mais%20sobre%20um%20atendimento%20psicanal%C3%ADtico." target="_blank" rel="noopener noreferrer">WhatsApp (11) 97823-1054 →</a></div>
+  <div class="pfa-intro-care"><h3>Um espaço de escuta e análise</h3><p>Sou Fernando Frascari, psicanalista e idealizador da PFA. Realizo atendimentos individuais on-line para quem deseja compreender melhor sua vida afetiva e suas dificuldades pessoais. Se quiser conversar sobre o atendimento, entre em contato comigo.</p><a onclick="return window.confirm('Você deseja realmente entrar em contato com o psicanalista para obter informações sobre o atendimento individual?')" class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Gostaria%20de%20saber%20mais%20sobre%20um%20atendimento%20psicanal%C3%ADtico." target="_blank" rel="noopener noreferrer">WhatsApp (11) 97823-1054 →</a></div>
  </section>`;
 }
 const PFA_PRODUCTS=[{"id":"o-homem-amaldicoado","category":"livros","title":"O Homem Amaldiçoado","author":"Fernando Frascari","description":"Um romance que todo cristão deveria ler.","image":"/foto%20da%20capa%20do%20livro.avif","url":"https://www.amazon.com.br/Homem-Amaldi%C3%A7oado-Fernando-Frascari/dp/6525455065","video":"/video-o-homem-amaldicoado.mp4"}];
