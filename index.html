@@ -671,7 +671,7 @@ function home(){
   <div class="pfa-intro-care"><h3>Um espaço de escuta e análise</h3><p>Sou Fernando Frascari, psicanalista e idealizador da PFA. Realizo atendimentos individuais on-line para quem deseja compreender melhor sua vida afetiva e suas dificuldades pessoais. Se quiser conversar sobre o atendimento, entre em contato comigo.</p><a onclick="return window.confirm('Você deseja realmente entrar em contato com o psicanalista para obter informações sobre o atendimento individual?')" class="btn pfa-intro-whatsapp" href="https://wa.me/5511978231054?text=Ol%C3%A1%2C%20Fernando%21%20Gostaria%20de%20saber%20mais%20sobre%20um%20atendimento%20psicanal%C3%ADtico." target="_blank" rel="noopener noreferrer">WhatsApp (11) 97823-1054 →</a></div>
  </section>`;
 }
-const PFA_PRODUCTS=[{"id":"o-homem-amaldicoado","category":"livros","title":"O Homem Amaldiçoado","author":"Fernando Frascari","description":"Um romance que todo cristão deveria ler.","image":"/foto%20da%20capa%20do%20livro.avif","url":"https://www.amazon.com.br/Homem-Amaldi%C3%A7oado-Fernando-Frascari/dp/6525455065","video":"/video-o-homem-amaldicoado.mp4"}];
+const PFA_PRODUCTS=[{"id":"o-homem-amaldicoado","category":"livros","title":"O Homem Amaldiçoado","author":"Fernando Frascari","description":"Um romance que todo cristão deveria ler.","image":"/foto%20da%20capa%20do%20livro.avif","url":"https://www.amazon.com.br/Homem-Amaldi%C3%A7oado-Fernando-Frascari/dp/6525455065","video":"/video-o-homem-amaldicoado.mp4"},{"id":"apostila-pfa","category":"apostilas","title":"Psicanálise da Formação Afetiva","author":"Fernando Frascari","description":"Apostila completa e ilustrada, com 215 páginas. Estude os fundamentos da PFA, o ego, as paixões, os vícios e as virtudes, a vocação e os casos práticos. Formato PDF digital.","price":"R$ 49,90","coverPage":1,"url":"https://pay.kiwify.com.br/NxbSuCV"}];
 function productsView(){
  const categories=[
   {id:'livros',title:'Livros',icon:'📚',description:'Romances e obras de Fernando Frascari.'},
@@ -689,16 +689,16 @@ function productsView(){
   const item=entries.find(item=>item.id===state.productId);
   if(!item){state.productId=null;return productsView();}
   const name=escapeHtml(item.title||'Produto');
-  const image=item.image?'<img src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'';
+  const image=item.coverPage?'<img src="'+escapeHtml(PAGE_ASSETS[String(item.coverPage)])+'" data-pfa-page="'+item.coverPage+'" alt="Capa de '+name+'">':item.image?'<img src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'';
   const video=item.video?'<div class="pfa-product-trailer"><h3>Assista à apresentação do livro</h3><video controls playsinline preload="none" poster="'+escapeHtml(item.image||'')+'"><source src="'+escapeHtml(item.video)+'" type="video/mp4">Seu navegador não pode reproduzir este vídeo.</video></div>':'';
-  const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">Comprar na Amazon ↗</a>':'';
+  const action=item.url?'<a class="btn pfa-product-action" href="'+escapeHtml(item.url)+'" target="_blank" rel="noopener noreferrer">'+(item.category==='apostilas'?'Comprar apostila na Kiwify ↗':'Comprar na Amazon ↗')+'</a>':'';
   return `<button type="button" class="back" id="pfaBackToProducts">← Voltar a ${category.title}</button>
-  <section class="pfa-product-detail"><div class="pfa-product-detail-cover">${image}</div><div class="pfa-product-detail-body"><span class="kicker">PRODUTOS À VENDA • ${category.title.toUpperCase()}</span><h1>${name}</h1><p class="pfa-product-author">${escapeHtml(item.author||'')}</p><p>${escapeHtml(item.description||'')}</p>${video}${action}</div></section>`;
+  <section class="pfa-product-detail"><div class="pfa-product-detail-cover">${image}</div><div class="pfa-product-detail-body"><span class="kicker">PRODUTOS À VENDA • ${category.title.toUpperCase()}</span><h1>${name}</h1><p class="pfa-product-author">${escapeHtml(item.author||'')}</p><p>${escapeHtml(item.description||'')}</p>${video}${item.price?`<p class="pfa-product-author"><strong>${escapeHtml(item.price)}</strong></p>`:''}${action}</div></section>`;
  }
  const cards=entries.map(item=>{
   const name=escapeHtml(item.title||'Produto');
-  const image=item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
-  return '<button type="button" class="pfa-book-tile" data-product-id="'+escapeHtml(item.id)+'" aria-label="Conhecer '+name+'">'+image+'<span class="pfa-book-title">'+name+'</span></button>';
+  const image=item.coverPage?'<img class="pfa-product-image" src="'+escapeHtml(PAGE_ASSETS[String(item.coverPage)])+'" data-pfa-page="'+item.coverPage+'" alt="Capa de '+name+'">':item.image?'<img class="pfa-product-image" src="'+escapeHtml(item.image)+'" alt="Capa de '+name+'" loading="lazy">':'<div class="pfa-product-placeholder" aria-hidden="true">▤</div>';
+  return '<button type="button" class="pfa-book-tile" data-product-id="'+escapeHtml(item.id)+'" aria-label="Conhecer '+name+'">'+image+'<span class="pfa-book-title">'+name+'</span>'+(item.price?'<span class="pfa-book-title">'+escapeHtml(item.price)+'</span>':'')+'</button>';
  }).join('');
  return `<button type="button" class="back" id="pfaBackToCategories">← Voltar às categorias</button>
  <section class="pfa-products-hero"><span class="pfa-products-label">PRODUTOS À VENDA</span><h1>${category.title}</h1><p>${category.description}</p></section>
