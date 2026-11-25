@@ -1067,27 +1067,56 @@ render();
     });
     return;
    }
-   const listing=await request('students');
-   const students=listing.students||[];
-   root.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3>Central de relacionamento</h3><button type="button" class="btn outline" id="pfaStudioLogout">Sair do Estúdio</button></div><p id="pfaStudioCount"></p><div class="pfa-signup-form"><label>Pesquisar inscritos<input id="pfaStudioSearch" placeholder="Nome, WhatsApp ou e-mail"></label><label>Filtrar<select id="pfaStudioFilter"><option value="all">Todos os inscritos</option><option value="notice">Autorizaram avisos</option><option value="email">Autorizaram ofertas por e-mail</option><option value="bulletin">Autorizaram boletim informativo</option><option value="none">Sem autorização para avisos</option></select></label></div><div style="display:grid;gap:8px;margin:16px 0"><button type="button" class="btn outline" id="pfaExportEmail">Exportar e-mails do boletim (CSV)</button><button type="button" class="btn outline" id="pfaExportOffers">Exportar e-mails para ofertas (CSV)</button><button type="button" class="btn outline" id="pfaExportPhone">Exportar WhatsApp autorizados (CSV)</button></div><details style="margin:16px 0;padding:12px;border:1px solid #dde8e2;border-radius:12px"><summary>Boletim semanal • preparar mensagem</summary><div class="pfa-signup-form"><label>Tipo de comunicação<select id="pfaMailType"><option value="bulletin">Boletim informativo (sem ofertas)</option><option value="offers">Ofertas comerciais</option></select></label><p id="pfaMailAudience" aria-live="polite"></p><label>Assunto<input id="pfaMailSubject" value="Reflexões da Formação Afetiva"></label><label>Mensagem<textarea id="pfaMailBody" rows="7" style="width:100%;padding:8px" placeholder="Escreva a reflexão da semana"></textarea></label><button type="button" class="btn primary" id="pfaMailDraft">Preparar rascunho de e-mail</button><p id="pfaMailStatus" aria-live="polite"></p><small>O rascunho usa Cco (cópia oculta). Nenhuma mensagem é enviada automaticamente. Revise os destinatários. Boletins informativos não devem conter ofertas. Respeite pedidos de descadastramento antes de novos envios.</small></div></details><div id="pfaStudioRows" style="display:grid;gap:10px"></div><p style="font-size:12px">Dados pessoais: mantenha esta lista privada. Autorizações antigas para avisos não equivalem a autorização específica para ofertas.</p>';
+   const students=[],seenStudents=new Set();let offset=0;
+   do{
+    if(!root.isConnected)return;
+    const resp=await fetch('/api/pfa?action=students&offset='+offset,{credentials:'same-origin',cache:'no-store'});
+    if(!resp.ok)throw new Error('Falha ao consultar inscritos');
+    const listing=await resp.json();
+    for(const item of listing.students||[]){if(!seenStudents.has(item.id)){seenStudents.add(item.id);students.push(item);}}
+    offset=Number.isInteger(listing.nextOffset)&&listing.nextOffset>offset?listing.nextOffset:null;
+    if(offset!==null)root.textContent='Carregando inscritos: '+students.length+' de '+(listing.total||'...');
+   }while(offset!==null);
+   students.sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'pt-BR',{sensitivity:'base'})||String(a.email||'').localeCompare(String(b.email||'')));
+   root.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3>Central de relacionamento</h3><button type="button" class="btn outline" id="pfaStudioLogout">Sair do Estúdio</button></div><p id="pfaStudioCount"></p><div class="pfa-signup-form"><label>Pesquisar inscritos<input id="pfaStudioSearch" placeholder="Nome, WhatsApp ou e-mail"></label><label>Filtrar<select id="pfaStudioFilter"><option value="all">Todos os inscritos</option><option value="notice">Autorizaram avisos</option><option value="email">Autorizaram ofertas por e-mail</option><option value="bulletin">Autorizaram boletim informativo</option><option value="none">Sem autorização para avisos</option></select></label></div><div style="display:grid;gap:8px;margin:16px 0"><button type="button" class="btn outline" id="pfaExportEmail">Exportar e-mails do boletim (CSV)</button><button type="button" class="btn outline" id="pfaExportOffers">Exportar e-mails para ofertas (CSV)</button><button type="button" class="btn outline" id="pfaExportPhone">Exportar WhatsApp autorizados (CSV)</button></div><details style="margin:16px 0;padding:12px;border:1px solid #dde8e2;border-radius:12px"><summary>Boletim semanal • preparar mensagem</summary><div class="pfa-signup-form"><label>Tipo de comunicação<select id="pfaMailType"><option value="bulletin">Boletim informativo (sem ofertas)</option><option value="offers">Ofertas comerciais</option></select></label><p id="pfaMailAudience" aria-live="polite"></p><label>Assunto<input id="pfaMailSubject" value="Reflexões da Formação Afetiva"></label><label>Mensagem<textarea id="pfaMailBody" rows="7" style="width:100%;padding:8px" placeholder="Escreva a reflexão da semana"></textarea></label><button type="button" class="btn primary" id="pfaMailDraft">Preparar rascunho de e-mail</button><p id="pfaMailStatus" aria-live="polite"></p><small>O rascunho usa Cco (cópia oculta). Nenhuma mensagem é enviada automaticamente. Revise os destinatários. Boletins informativos não devem conter ofertas. Respeite pedidos de descadastramento antes de novos envios.</small></div></details><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:12px 0"><label>Por página <select id="pfaStudioPageSize"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label><span id="pfaStudioRange" aria-live="polite"></span></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr><th style="padding:8px">Nome (A–Z)</th><th style="padding:8px">WhatsApp</th><th style="padding:8px">E-mail</th><th style="padding:8px">Avisos</th><th style="padding:8px">Ofertas</th></tr></thead><tbody id="pfaStudioRows"></tbody></table></div><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:12px 0"><button class="btn outline" type="button" id="pfaStudioPrev">Anterior</button><span id="pfaStudioPage"></span><button class="btn outline" type="button" id="pfaStudioNext">Próxima</button></div><dialog id="pfaStudentDialog" style="width:min(92vw,520px);max-height:85vh;overflow:auto;border:1px solid #dde8e2;border-radius:16px;padding:20px;color:#17383c;background:#fffdf7"><div id="pfaStudentDetails"></div><button class="btn outline" type="button" id="pfaStudentClose" style="margin-top:16px">Fechar ficha</button></dialog><p style="font-size:12px">Dados pessoais: mantenha esta lista privada. Autorizações antigas para avisos não equivalem a autorização específica para ofertas.</p>';
    const el=id=>root.querySelector('#'+id);
    const offers=students.filter(v=>v.emailMarketing===true&&v.email); const bulletin=students.filter(v=>(v.consent===true||v.emailMarketing===true)&&v.email); const audience=()=>el('pfaMailType').value==='offers'?offers:bulletin; function showAudience(){el('pfaMailAudience').textContent='Destinatários autorizados: '+audience().length;} el('pfaMailType').addEventListener('change',showAudience);showAudience();
    el('pfaStudioCount').textContent='Inscritos encontrados: '+students.length+' | Avisos: '+students.filter(v=>v.consent===true).length+' | Boletim: '+bulletin.length+' | Ofertas: '+offers.length;
-   function draw(){
-    const term=el('pfaStudioSearch').value.trim().toLocaleLowerCase('pt-BR'),filter=el('pfaStudioFilter').value;
-    const rows=el('pfaStudioRows');rows.replaceChildren();
-    for(const item of students){
-     if(term&&![item.name,item.phone,item.email].some(v=>String(v||'').toLocaleLowerCase('pt-BR').includes(term)))continue;
-     if(filter==='notice'&&item.consent!==true||filter==='email'&&item.emailMarketing!==true||filter==='bulletin'&&!(item.consent===true||item.emailMarketing===true)||filter==='none'&&item.consent===true)continue;
-     const card=document.createElement('div');card.style.cssText='border:1px solid #dde8e2;border-radius:12px;padding:12px;overflow-wrap:anywhere';
-     const heading=document.createElement('strong');heading.textContent=item.name;card.appendChild(heading);
-     for(const value of ['WhatsApp: '+(item.phone||''),'E-mail: '+(item.email||''),'Avisos: '+(item.consent===true?'Sim':'Não'),'Boletim informativo: '+(item.consent===true||item.emailMarketing===true?'Sim':'Não autorizado'),'Ofertas: '+(item.emailMarketing===true?'Sim':'Não autorizado')]){const p=document.createElement('p');p.style.margin='5px 0';p.textContent=value;card.appendChild(p);}
-     if(item.consent===true){let phone=String(item.phone||'').replace(/\D/g,'');if(phone.length===10||phone.length===11)phone='55'+phone;if(phone.length>=12&&phone.length<=15){const link=document.createElement('a');link.className='btn outline';link.href='https://wa.me/'+phone;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Conversar pelo WhatsApp';card.appendChild(link);}}
-     rows.appendChild(card);
+   let currentPage=1;
+   const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+   function openStudent(item){
+    const details=el('pfaStudentDetails');details.replaceChildren();
+    const h=document.createElement('h2');h.textContent=item.name||'Inscrito';details.appendChild(h);
+    for(const value of ['WhatsApp: '+(item.phone||'Não informado'),'E-mail: '+(item.email||'Não informado'),'Avisos: '+(item.consent===true?'Sim':'Não'),'Boletim informativo: '+(item.consent===true||item.emailMarketing===true?'Sim':'Não'),'Ofertas: '+(item.emailMarketing===true?'Sim':'Não'),'Inscrição: '+(item.createdAt?new Date(item.createdAt).toLocaleDateString('pt-BR'):'Não informada')]){
+     const p=document.createElement('p');p.textContent=value;details.appendChild(p);
     }
-    if(!rows.children.length)rows.textContent='Nenhum inscrito encontrado.';
+    function action(label,url){const a=document.createElement('a');a.className='btn outline';a.style.cssText='display:block;margin:8px 0';a.textContent=label;a.href=url;if(url.startsWith('https:')){a.target='_blank';a.rel='noopener noreferrer';}details.appendChild(a);}
+    if(item.consent===true){let phone=String(item.phone||'').replace(/\D/g,'');if(phone.length===10||phone.length===11)phone='55'+phone;if(phone.length>=12&&phone.length<=15)action('Conversar pelo WhatsApp','https://wa.me/'+phone);}
+    if((item.consent===true||item.emailMarketing===true)&&/^[^\s@,;?&]+@[^\s@,;?&]+\.[^\s@,;?&]+$/.test(item.email||''))action('Preparar e-mail individual','mailto:'+encodeURIComponent(item.email));
+    const dialog=el('pfaStudentDialog');if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
    }
-   el('pfaStudioSearch').addEventListener('input',draw);el('pfaStudioFilter').addEventListener('change',draw);draw();
+   el('pfaStudentClose').addEventListener('click',()=>{const dialog=el('pfaStudentDialog');if(typeof dialog.close==='function')dialog.close();else dialog.removeAttribute('open');});
+   function draw(){
+    const term=normalize(el('pfaStudioSearch').value.trim()),filter=el('pfaStudioFilter').value,limit=Number(el('pfaStudioPageSize').value)||25;
+    const filtered=students.filter(item=>{
+     if(term&&![item.name,item.phone,item.email].some(v=>normalize(v).includes(term)))return false;
+     if(filter==='notice'&&item.consent!==true||filter==='email'&&item.emailMarketing!==true||filter==='bulletin'&&!(item.consent===true||item.emailMarketing===true)||filter==='none'&&item.consent===true)return false;
+     return true;
+    });
+    const pages=Math.max(1,Math.ceil(filtered.length/limit));currentPage=Math.max(1,Math.min(currentPage,pages));const begin=(currentPage-1)*limit;
+    const rows=el('pfaStudioRows');rows.replaceChildren();
+    for(const item of filtered.slice(begin,begin+limit)){
+     const tr=document.createElement('tr');tr.style.cursor='pointer';
+     const td=cell('');const button=document.createElement('button');button.type='button';button.textContent=item.name||'Sem nome';button.style.cssText='border:0;background:none;color:#235c60;text-align:left;text-decoration:underline;font:inherit;font-weight:600;cursor:pointer;padding:4px 0';td.appendChild(button);tr.appendChild(td);
+     for(const value of [item.phone,item.email,item.consent===true?'Sim':'Não',item.emailMarketing===true?'Sim':'Não'])tr.appendChild(cell(value));
+     tr.addEventListener('click',()=>openStudent(item));rows.appendChild(tr);
+    }
+    if(!filtered.length){const tr=document.createElement('tr'),td=cell('Nenhum inscrito encontrado.');td.colSpan=5;tr.appendChild(td);rows.appendChild(tr);}
+    el('pfaStudioRange').textContent=filtered.length?((begin+1)+'–'+Math.min(begin+limit,filtered.length)+' de '+filtered.length):'0 inscritos';
+    el('pfaStudioPage').textContent='Página '+currentPage+' de '+pages;el('pfaStudioPrev').disabled=currentPage===1;el('pfaStudioNext').disabled=currentPage===pages;
+   }
+   for(const [id,event] of [['pfaStudioSearch','input'],['pfaStudioFilter','change'],['pfaStudioPageSize','change']])el(id).addEventListener(event,()=>{currentPage=1;draw();});
+   el('pfaStudioPrev').addEventListener('click',()=>{currentPage--;draw();});el('pfaStudioNext').addEventListener('click',()=>{currentPage++;draw();});draw();
    function csv(records,field,suffix='autorizados'){
     const quote=v=>'"'+String(v??'').replace(/^[=+\-@\t\r]/,"'$&").replace(/"/g,'""')+'"';
     const content='\uFEFF'+['Nome;'+field,...records.map(v=>quote(v.name)+';'+quote(v[field]))].join('\r\n');
