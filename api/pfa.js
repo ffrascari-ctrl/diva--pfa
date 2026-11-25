@@ -87,10 +87,12 @@ export default async function handler(req,res){
   }
   if(!authenticated(req))return fail(res,401,'Acesso exclusivo do administrador');
   if(req.method==='GET'&&action==='students'){
-   const ids=await redis(['ZREVRANGE','pfa:students',0,499]);
-   if(!ids?.length)return res.status(200).json({ok:true,students:[]});
+   const offset=Math.max(0,Math.floor(Number(req.query.offset)||0));
+   const count=Number(await redis(['ZCARD','pfa:students']));
+   const ids=await redis(['ZREVRANGE','pfa:students',offset,offset+499]);
+   if(!ids?.length)return res.status(200).json({ok:true,students:[],total:count,nextOffset:null});
    const values=await redis(['MGET',...ids.map(id=>'pfa:student:'+id)]);
-   return res.status(200).json({ok:true,students:values.filter(Boolean).map(v=>JSON.parse(v))});
+   return res.status(200).json({ok:true,students:values.filter(Boolean).map(v=>JSON.parse(v)),total:count,nextOffset:offset+ids.length<count?offset+ids.length:null});
   }
   if(action==='delete'){
    const {id}=bodyFrom(req);
