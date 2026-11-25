@@ -77,7 +77,10 @@ export default async function handler(req,res){
    const id=crypto.createHmac('sha256',process.env.PFA_SESSION_SECRET).update(email).digest('hex');
    const existing=await redis(['GET','pfa:student:'+id]);
    const createdAt=existing?JSON.parse(existing).createdAt:new Date().toISOString();
-   const record={id,name,phone,email,consent:b.consent,createdAt,updatedAt:new Date().toISOString()};
+   const previous=existing?JSON.parse(existing):{};
+   if(b.emailMarketing!==undefined&&typeof b.emailMarketing!=='boolean')return fail(res,400,'Consentimento de e-mail inválido');
+   const emailMarketing=b.emailMarketing===true;
+   const record={...previous,id,name,phone,email,consent:b.consent,emailMarketing,emailMarketingConsentAt:emailMarketing?new Date().toISOString():null,createdAt,updatedAt:new Date().toISOString()};
    await redis(['SET','pfa:student:'+id,JSON.stringify(record)]);
    await redis(['ZADD','pfa:students',Date.now(),id]);
    return res.status(200).json({ok:true,message:'Inscrição recebida'});
