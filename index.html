@@ -737,6 +737,7 @@ function accountView(){
     <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" value="${escapeHtml(info.phone||'')}" required></label>
     <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" value="${escapeHtml(info.email||'')}" required></label>
     <label class="pfa-signup-consent"><input name="consent" type="checkbox" ${info.consent?'checked':''}> Desejo receber mensagens e avisos da PFA pelo WhatsApp e e-mail quando o cadastro estiver disponível.</label>
+    <label class="pfa-signup-consent"><input name="emailMarketing" type="checkbox" ${info.emailMarketing?'checked':''}> Autorizo receber por e-mail o boletim semanal da PFA e ofertas de materiais. Posso retirar a autorização nesta página a qualquer momento.</label>
     <button class="btn primary" type="submit">Salvar meus dados</button>
     <button class="btn outline" type="button" id="pfaEraseProfile">Apagar meus dados</button>
   </form>
@@ -1003,6 +1004,7 @@ render();
       <label>WhatsApp<input name="phone" type="tel" maxlength="22" autocomplete="tel" required></label>
       <label>E-mail<input name="email" type="email" maxlength="160" autocomplete="email" required></label>
       <label class="pfa-signup-consent"><input name="consent" type="checkbox"> Autorizo receber comunicações do Divã PFA pelo WhatsApp e e-mail, quando esse serviço for disponibilizado.</label>
+      <label class="pfa-signup-consent"><input name="emailMarketing" type="checkbox"> Autorizo receber por e-mail o boletim semanal da PFA e ofertas de materiais. Posso retirar a autorização na página Conta a qualquer momento.</label>
       <button type="submit" class="btn primary">Enviar inscrição</button>
     </form>
     <button type="button" class="pfa-welcome-skip" id="pfaWelcomeSkip">Continuar sem inscrição</button>
@@ -1018,7 +1020,7 @@ render();
   if(!resp.ok)throw new Error(result.error||'Serviço indisponível');
   return result;
  }
- function values(form){const data=new FormData(form);return {name:String(data.get('name')||'').trim(),phone:String(data.get('phone')||'').trim(),email:String(data.get('email')||'').trim(),consent:data.has('consent')};}
+ function values(form){const data=new FormData(form);return {name:String(data.get('name')||'').trim(),phone:String(data.get('phone')||'').trim(),email:String(data.get('email')||'').trim(),consent:data.has('consent'),emailMarketing:data.has('emailMarketing')};}
  async function save(form){
   const record=values(form);
   let delivered=false;
@@ -1066,10 +1068,43 @@ render();
     return;
    }
    const listing=await request('students');
-   root.innerHTML='<div class="flex" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><p id="pfaStudioCount"></p><button type="button" class="btn outline" id="pfaStudioLogout">Sair do Estúdio</button></div><div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr><th>Nome</th><th>WhatsApp</th><th>E-mail</th><th>Autorizou avisos?</th></tr></thead><tbody id="pfaStudioRows"></tbody></table></div><p style="font-size:12px">Esses contatos são pessoais. Não compartilhe a lista sem autorização.</p>';
-   root.querySelector('#pfaStudioCount').textContent='Inscritos encontrados: '+listing.students.length;
-   const tbody=root.querySelector('#pfaStudioRows');
-   for(const item of listing.students){const tr=document.createElement('tr');[item.name,item.phone,item.email,item.consent?'Sim':'Não'].forEach(v=>tr.appendChild(cell(v)));tbody.appendChild(tr);}
+   const students=listing.students||[];
+   root.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3>Central de relacionamento</h3><button type="button" class="btn outline" id="pfaStudioLogout">Sair do Estúdio</button></div><p id="pfaStudioCount"></p><div class="pfa-signup-form"><label>Pesquisar inscritos<input id="pfaStudioSearch" placeholder="Nome, WhatsApp ou e-mail"></label><label>Filtrar<select id="pfaStudioFilter"><option value="all">Todos os inscritos</option><option value="notice">Autorizaram avisos</option><option value="email">Autorizaram boletim e ofertas por e-mail</option><option value="none">Sem autorização para avisos</option></select></label></div><div style="display:grid;gap:8px;margin:16px 0"><button type="button" class="btn outline" id="pfaExportEmail">Exportar e-mails autorizados (CSV)</button><button type="button" class="btn outline" id="pfaExportPhone">Exportar WhatsApp autorizados (CSV)</button></div><details style="margin:16px 0;padding:12px;border:1px solid #dde8e2;border-radius:12px"><summary>Boletim semanal • preparar mensagem</summary><div class="pfa-signup-form"><label>Assunto<input id="pfaMailSubject" value="Reflexões da Formação Afetiva"></label><label>Mensagem<textarea id="pfaMailBody" rows="7" style="width:100%;padding:8px" placeholder="Escreva a reflexão da semana"></textarea></label><button type="button" class="btn primary" id="pfaMailDraft">Preparar rascunho de e-mail</button><p id="pfaMailStatus" aria-live="polite"></p><small>O rascunho usa Cco (cópia oculta). Nenhuma mensagem é enviada automaticamente. Revise os destinatários e ofereça opção de descadastramento.</small></div></details><div id="pfaStudioRows" style="display:grid;gap:10px"></div><p style="font-size:12px">Dados pessoais: mantenha esta lista privada. Autorizações antigas para avisos não equivalem a autorização específica para ofertas.</p>';
+   const el=id=>root.querySelector('#'+id);
+   const permitted=students.filter(v=>v.emailMarketing===true&&v.email);
+   el('pfaStudioCount').textContent='Inscritos encontrados: '+students.length+' | Avisos: '+students.filter(v=>v.consent===true).length+' | Boletim e ofertas: '+permitted.length;
+   function draw(){
+    const term=el('pfaStudioSearch').value.trim().toLocaleLowerCase('pt-BR'),filter=el('pfaStudioFilter').value;
+    const rows=el('pfaStudioRows');rows.replaceChildren();
+    for(const item of students){
+     if(term&&![item.name,item.phone,item.email].some(v=>String(v||'').toLocaleLowerCase('pt-BR').includes(term)))continue;
+     if(filter==='notice'&&item.consent!==true||filter==='email'&&item.emailMarketing!==true||filter==='none'&&item.consent===true)continue;
+     const card=document.createElement('div');card.style.cssText='border:1px solid #dde8e2;border-radius:12px;padding:12px;overflow-wrap:anywhere';
+     const heading=document.createElement('strong');heading.textContent=item.name;card.appendChild(heading);
+     for(const value of ['WhatsApp: '+(item.phone||''),'E-mail: '+(item.email||''),'Avisos: '+(item.consent===true?'Sim':'Não'),'Boletim e ofertas: '+(item.emailMarketing===true?'Sim':'Não autorizado')]){const p=document.createElement('p');p.style.margin='5px 0';p.textContent=value;card.appendChild(p);}
+     if(item.consent===true){let phone=String(item.phone||'').replace(/\D/g,'');if(phone.length===10||phone.length===11)phone='55'+phone;if(phone.length>=12&&phone.length<=15){const link=document.createElement('a');link.className='btn outline';link.href='https://wa.me/'+phone;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Conversar pelo WhatsApp';card.appendChild(link);}}
+     rows.appendChild(card);
+    }
+    if(!rows.children.length)rows.textContent='Nenhum inscrito encontrado.';
+   }
+   el('pfaStudioSearch').addEventListener('input',draw);el('pfaStudioFilter').addEventListener('change',draw);draw();
+   function csv(records,field){
+    const quote=v=>'"'+String(v??'').replace(/^[=+\-@\t\r]/,"'$&").replace(/"/g,'""')+'"';
+    const content='\uFEFF'+['Nome;'+field,...records.map(v=>quote(v.name)+';'+quote(v[field]))].join('\r\n');
+    const url=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='pfa-'+field+'-autorizados.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+   }
+   el('pfaExportEmail').addEventListener('click',()=>{if(permitted.length)csv(permitted,'email');else alert('Ainda não há autorização específica para campanhas por e-mail.');});
+   el('pfaExportPhone').addEventListener('click',()=>{const records=students.filter(v=>v.consent===true&&v.phone);if(records.length)csv(records,'phone');else alert('Nenhum contato autorizado.');});
+   el('pfaMailDraft').addEventListener('click',()=>{
+    const status=el('pfaMailStatus');if(!permitted.length){status.textContent='Nenhum inscrito autorizou especificamente boletins e ofertas por e-mail.';return;}
+    const subject=el('pfaMailSubject').value.trim(),body=el('pfaMailBody').value.trim();if(!subject||!body){status.textContent='Preencha assunto e mensagem.';return;}
+    const footer='\n\nPara deixar de receber nossos e-mails, responda a esta mensagem solicitando o descadastramento.';
+    const address=permitted.map(v=>v.email).filter(v=>/^[^\s@,;?&]+@[^\s@,;?&]+\.[^\s@,;?&]+$/.test(v)).join(',');
+    if(!address){status.textContent='Nenhum endereço válido.';return;}
+    const url='mailto:?bcc='+encodeURIComponent(address)+'&subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body+footer);
+    if(url.length>1800){status.textContent='Mensagem ou lista grande demais. Exporte os e-mails e prepare a campanha em sua ferramenta de e-mail.';return;}
+    if(confirm('Abrir rascunho no seu aplicativo de e-mail, sem enviar automaticamente?'))location.href=url;
+   });
    root.querySelector('#pfaStudioLogout').addEventListener('click',async()=>{try{await request('logout',{});}catch(e){}loadStudio();});
   }catch(err){root.textContent='Estúdio indisponível: '+err.message+'. Configure a senha e o armazenamento seguro no servidor para ativar.';}
  }
